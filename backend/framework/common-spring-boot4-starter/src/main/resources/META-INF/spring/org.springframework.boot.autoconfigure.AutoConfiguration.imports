@@ -1,0 +1,2 @@
+cn.master.autoconfigure.CommonAutoConfiguration
+cn.master.autoconfigure.RedissonAutoConfiguration
