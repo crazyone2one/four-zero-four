@@ -2,6 +2,7 @@
 import {layoutInjectionKey, mediaQueryInjectionKey} from "/@/injection";
 import {breakpointsTailwind, useBreakpoints} from "@vueuse/core";
 import type {LayoutSlideDirection} from "/@/injection/types.ts";
+import AppView from "/@/components/AppView.vue";
 
 const breakpoints = useBreakpoints(breakpointsTailwind)
 
@@ -37,7 +38,7 @@ provide(layoutInjectionKey, {
         <n-notification-provider placement="bottom-right">
           <n-message-provider>
             <n-dialog-provider>
-              <router-view/>
+              <app-view/>
             </n-dialog-provider>
           </n-message-provider>
         </n-notification-provider>

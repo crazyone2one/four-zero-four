@@ -12,6 +12,7 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     AppLogo: typeof import('./../components/AppLogo.vue')['default']
+    AppView: typeof import('./../components/AppView.vue')['default']
     ButtonAnimation: typeof import('./../components/button-animation/ButtonAnimation.vue')['default']
     ButtonAnimationProvider: typeof import('./../components/button-animation/ButtonAnimationProvider.vue')['default']
     CollapseTransition: typeof import('./../components/collapse-transition/CollapseTransition.vue')['default']
@@ -19,6 +20,8 @@ declare module 'vue' {
     NButton: typeof import('naive-ui')['NButton']
     NConfigProvider: typeof import('naive-ui')['NConfigProvider']
     NDialogProvider: typeof import('naive-ui')['NDialogProvider']
+    NDrawer: typeof import('naive-ui')['NDrawer']
+    NDrawerContent: typeof import('naive-ui')['NDrawerContent']
     NDropdown: typeof import('naive-ui')['NDropdown']
     NEl: typeof import('naive-ui')['NEl']
     NFlex: typeof import('naive-ui')['NFlex']

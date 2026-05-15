@@ -1,5 +1,6 @@
 <script setup lang="ts">
 
+import PreferencesDrawer from "/@/layout/header/action/PreferencesDrawer.vue";
 </script>
 
 <template>
@@ -21,6 +22,7 @@
     <button-animation :animation="false">
       <span class="i-mage:gem-stone"/>
     </button-animation>
+    <preferences-drawer/>
   </div>
 </template>
 

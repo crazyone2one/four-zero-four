@@ -1,13 +1,11 @@
 <script setup lang="ts">
 import Logo from '/@/components/AppLogo.vue';
 import {DEFAULT_PREFERENCES_OPTIONS, toRefsPreferencesStore} from "/@/stores";
-import {useInjection} from "/@/composables/useInjection.ts";
-import {layoutInjectionKey} from "/@/injection";
 
 const APP_NAME = import.meta.env.VITE_APP_NAME || 'FzF'
 const {minWidth: defaultMinWidth, width: defaultWidth} = DEFAULT_PREFERENCES_OPTIONS.sidebarMenu
-const {isSidebarColResizing} = useInjection(layoutInjectionKey)
-const {navigationMode, sidebarMenu: sidebarMenu, showLogo} = toRefsPreferencesStore()
+
+const {navigationMode, sidebarMenu: sidebarMenu} = toRefsPreferencesStore()
 const logoWrapperRef = useTemplateRef<HTMLElement>('logoWrapper')
 const collapseWidth = ref(0)
 watch(
@@ -32,35 +30,12 @@ watch(
 </script>
 
 <template>
-  <div
-      class="shrink-0"
-      :class="{
-      'transition-[width]': !isSidebarColResizing,
-    }"
-      :style="
-      collapseWidth > 0 && {
-        width: `${collapseWidth}px`,
-      }
-    "
-  >
-    <div
-        ref="logoWrapper"
-        class="flex h-full items-center transition-[opacity,padding]"
-        :class="[
-        sidebarMenu.collapsed ? 'px-3' : 'px-4',
-        {
-          'opacity-0': !showLogo,
-          'w-fit': navigationMode === 'horizontal',
-        },
-      ]"
-    >
+  <div class="shrink-0" :style="{width: `${240}px`,}">
+    <div ref="logoWrapper" class="flex h-full items-center transition-[opacity,padding]">
       <div class="size-10">
         <Logo/>
       </div>
-      <div
-          class="flex flex-1 overflow-hidden transition-[margin-left,max-width]"
-          :class="sidebarMenu.collapsed ? 'ml-0 max-w-0' : 'ml-4 max-w-44'"
-      >
+      <div class="flex flex-1 overflow-hidden transition-[margin-left,max-width] ml-4 max-w-44">
         <h1 class="truncate text-xl">
           {{ APP_NAME }}
         </h1>

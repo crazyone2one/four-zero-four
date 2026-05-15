@@ -12,7 +12,11 @@ export default defineConfig({
         'wh-full': 'w-full h-full',
     },
     presets: [
-        presetWind4(),
+        presetWind4({
+            preflights: {
+                reset: true
+            }
+        }),
         presetAttributify(),
         presetIcons({
             collections: {

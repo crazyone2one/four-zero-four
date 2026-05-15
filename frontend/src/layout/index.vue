@@ -4,8 +4,7 @@ import MainLayout from './main/index.vue'
 import HeaderLayout from './header/index.vue'
 import SidebarMenu from "/@/layout/aside/index.vue";
 
-const {sidebarMenu,} = toRefsPreferencesStore()
-
+const {sidebarMenu, preferences} = toRefsPreferencesStore()
 </script>
 
 <template>
@@ -15,7 +14,7 @@ const {sidebarMenu,} = toRefsPreferencesStore()
                        class="relative flex h-full flex-col">
         <header-layout/>
       </n-layout-header>
-      <n-layout has-sider position="absolute" style="top: 64px; bottom: 64px">
+      <n-layout has-sider position="absolute" :style="{ top: '64px', bottom: preferences.showFooter ? '64px' : '1px' }">
         <n-layout-sider bordered collapse-mode="width"
                         :collapsed-width="64"
                         :width="240"
@@ -29,10 +28,10 @@ const {sidebarMenu,} = toRefsPreferencesStore()
           <main-layout/>
         </n-layout>
       </n-layout>
-      <n-layout-footer
-          bordered
-          position="absolute"
-          style="height: 32px; padding: 24px"
+      <n-layout-footer v-show="preferences.showFooter"
+                       bordered
+                       position="absolute"
+                       style="height: 32px; padding: 24px"
       >
         城府路
       </n-layout-footer>

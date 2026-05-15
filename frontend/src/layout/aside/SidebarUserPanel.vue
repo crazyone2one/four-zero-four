@@ -7,10 +7,10 @@ const {sidebarMenu} = toRefsPreferencesStore()
 </script>
 
 <template>
-  <div class="flex cursor-pointer items-center hover:bg-gray-185" :class="
+  <div class="flex cursor-pointer items-center bg-gray-200" :class="
       sidebarMenu.collapsed
         ? 'mx-2 rounded-naive px-2 py-1.5'
-        : 'mx-4 rounded-xl bg-neutral-150 py-3.5 pr-2.5 pl-3.5 dark:bg-neutral-800'
+        : 'mx-4 rounded-xl bg-gray-100 py-3.5 pr-2.5 pl-3.5 dark:bg-neutral-800'
     ">
     <user-dropdown placement="right-end"
                    :disabled="!sidebarMenu.collapsed">
