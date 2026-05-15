@@ -45,11 +45,11 @@ export const DEFAULT_PREFERENCES_OPTIONS = {
     sidebarMenu: {
         collapsed: false,
         minWidth: 64,
-        width: 256,
+        width: 240,
         maxWidth: 456,
         mobileWidth: 256,
     },
-    showFooter: true,
+    showFooter: false,
     tabs: {
         show: true,
         showTabClose: true,

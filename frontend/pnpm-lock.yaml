@@ -30,9 +30,12 @@ importers:
         specifier: ^5.0.7
         version: 5.0.7(@vue/compiler-sfc@3.5.34)(pinia@3.0.4(typescript@6.0.3)(vue@3.5.34(typescript@6.0.3)))(vue@3.5.34(typescript@6.0.3))
     devDependencies:
-      '@iconify-json/material-symbols':
-        specifier: ^1.2.72
-        version: 1.2.72
+      '@iconify-json/mage':
+        specifier: ^1.2.4
+        version: 1.2.4
+      '@types/lodash-es':
+        specifier: ^4.17.12
+        version: 4.17.12
       '@types/node':
         specifier: ^24.12.2
         version: 24.12.3
@@ -135,8 +138,8 @@ packages:
   '@emotion/hash@0.8.0':
     resolution: {integrity: sha512-kBJtf7PH6aWwZ6fka3zQ0p6SBYzx4fl1LoZXE2RrnYST9Xljm7WfKJrU4g/Xr3Beg72MLrp1AWNUmuYJTL7Cow==}
 
-  '@iconify-json/material-symbols@1.2.72':
-    resolution: {integrity: sha512-hIfBPaAixWH7xnX2rRfuoZX7CZLviJKruL0nnuIY5MqAo14KPXnfNgWdvJdokjwKdsB/OgWOH4Ipm+AXuGSbsA==}
+  '@iconify-json/mage@1.2.4':
+    resolution: {integrity: sha512-QZnjHtV/RP9/bF6n7bHSnXMPX/MW5dpHqOH2pEHiEytUx76OKrUZ55YBFwrAxPz5f3BoCeWMY1wyEQQD36Bkkw==}
 
   '@iconify/types@2.0.0':
     resolution: {integrity: sha512-+wluvCrRhXrhyOmRDJ3q8mux9JkKy5SJ/v8ol2tu4FVjyYvtEzkc/3pK15ET6RKg4b4w4BmTk1+gsCUhf21Ykg==}
@@ -1258,7 +1261,7 @@ snapshots:
 
   '@emotion/hash@0.8.0': {}
 
-  '@iconify-json/material-symbols@1.2.72':
+  '@iconify-json/mage@1.2.4':
     dependencies:
       '@iconify/types': 2.0.0
 

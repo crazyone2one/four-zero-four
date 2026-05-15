@@ -4,6 +4,7 @@ interface Window {
     $dialog: import('naive-ui').DialogApi
     $message: import('naive-ui').MessageApi
     $notification: import('naive-ui').NotificationApi
+    loaderElement?: HTMLElement | null
 }
 declare module '*.vue' {
     import type { DefineComponent } from 'vue'
@@ -13,11 +14,6 @@ declare module '*.vue' {
 }
 declare namespace App {
     type lang = 'zhCN' | 'enUS'
-}
-interface ViteTypeOptions {
-    // 添加这行代码，你就可以将 ImportMetaEnv 的类型设为严格模式，
-    // 这样就不允许有未知的键值了。
-    // strictImportMetaEnv: unknown
 }
 
 interface ImportMetaEnv {

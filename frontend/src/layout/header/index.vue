@@ -1,21 +1,19 @@
 <script setup lang="ts">
 import Logo from './logo/index.vue'
 import Action from './action/index.vue';
-import {toRefsPreferencesStore} from "/@/stores";
-const { navigationMode } = toRefsPreferencesStore()
 </script>
 
 <template>
-  <header class="flex bg-naive-card transition-[background-color]">
+  <div class="flex items-center wh-full">
     <logo/>
-    <div
-        class="flex flex-1 items-center border-l px-4 py-3.5 transition-[border-color]"
-        :class="navigationMode === 'sidebar' ? 'border-naive-border' : 'border-transparent'"
-    >
-      <!--      <Navigation />-->
+    <div class=" flex flex-1 items-center  px-4 py-3.5 transition-[border-color]">
+      <div class="flex h-9 flex-1 items-center">
+        <n-button>n1</n-button>
+        <n-button>n2</n-button>
+      </div>
       <Action class="gap-x-3 pl-4"/>
     </div>
-  </header>
+  </div>
 </template>
 
 <style scoped>

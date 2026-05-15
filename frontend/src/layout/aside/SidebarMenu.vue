@@ -1,33 +1,62 @@
 <script setup lang="ts">
-import type {MenuInst} from "naive-ui";
+import type {MenuInst, MenuOption} from "naive-ui";
 import {toRefsPreferencesStore} from "/@/stores";
+import {RouterLink} from "vue-router";
+import router from '/@/router'
 
 const menuRef = useTemplateRef<MenuInst>('menuRef');
 const menuActiveKey = ref('')
-const { sidebarMenu } = toRefsPreferencesStore()
-const menuOptions = [
+const {sidebarMenu} = toRefsPreferencesStore()
+const renderLink = (key: string) => {
+  return () => h(RouterLink, {to: {name: key}}, {default: () => key})
+}
+const menuOptions: MenuOption[] = [
   {
-    label: 'Home',
-    key: 'home',
-
+    label: renderLink('Dashboard'),
+    key: 'Dashboard',
+    icon: () => h('div', {class: 'i-mage:dashboard-chart'})
+  },
+  {
+    label: "Setting",
+    key: 'Setting',
+    icon: () => h('div', {class: 'i-mage:settings'}),
+    children: [
+      {
+        label: renderLink('Project'),
+        key: 'Project',
+        icon: () => h('div', {class: 'i-mage:dashboard-chart'})
+      },
+      {
+        label: () => h(RouterLink, {to: {name: 'User'}}, {default: () => 'User'}),
+        key: 'User',
+        icon: () => h('div', {class: 'i-mage:users'})
+      }
+    ]
   }
 ]
+watch(
+    () => router.currentRoute.value,
+    (newRoute) => {
+      menuActiveKey.value = newRoute.name as string
+      menuRef.value?.showOption(menuActiveKey.value)
+    },
+    {
+      immediate: true,
+    },
+)
 </script>
 
 <template>
-  <n-scrollbar>
+  <div class="mt-5">
     <n-menu ref="menuRef"
-            :value="menuActiveKey"
+            v-model:value="menuActiveKey"
             :options="menuOptions"
-            :collapsed-width="sidebarMenu.minWidth"
             :collapsed="sidebarMenu.collapsed"
-            :collapsed-icon-size="20"
-            :dropdown-props="{
-        size: 'medium',
-        trigger: 'click',
-      }"
+            :collapsed-width="64"
+            :collapsed-icon-size="22"
     />
-  </n-scrollbar>
+  </div>
+
 </template>
 
 <style scoped>

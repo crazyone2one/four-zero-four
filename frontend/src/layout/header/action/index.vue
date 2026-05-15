@@ -4,11 +4,23 @@
 
 <template>
   <div class="flex items-center">
-    <n-button>action1</n-button>
-    <n-button>action2</n-button>
-    <n-button>action3</n-button>
-    <n-button>action4</n-button>
-    <n-button>action5</n-button>
+    <button-animation :animation="false"
+                      tag="a"
+                      href="https://github.com/crazyone2one/four-zero-four"
+                      target="_blank"
+                      rel="noopener noreferrer"
+    >
+      <span class="i-mage:github"/>
+    </button-animation>
+    <button-animation :animation="false">
+      <span class="i-mage:notification-bell-snooze"/>
+    </button-animation>
+    <button-animation :animation="false">
+      <span class="i-mage:dashboard-bar-notification"/>
+    </button-animation>
+    <button-animation :animation="false">
+      <span class="i-mage:gem-stone"/>
+    </button-animation>
   </div>
 </template>
 

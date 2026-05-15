@@ -1,25 +1,19 @@
 <script setup lang="ts">
 import {toRefsPreferencesStore} from "/@/stores";
+import {ButtonAnimation} from "/@/components/button-animation";
 
-const message = useMessage()
 const {sidebarMenu} = toRefsPreferencesStore()
-const handleUserPanelClick = () => {
-  message.info('Fzf')
-}
+
 </script>
 
 <template>
-  <div
-      class="flex cursor-pointer items-center transition-[background-color,border-radius,margin,padding] hover:bg-neutral-185 dark:hover:bg-neutral-775"
-      :class="
+  <div class="flex cursor-pointer items-center hover:bg-gray-185" :class="
       sidebarMenu.collapsed
         ? 'mx-2 rounded-naive px-2 py-1.5'
         : 'mx-4 rounded-xl bg-neutral-150 py-3.5 pr-2.5 pl-3.5 dark:bg-neutral-800'
-    "
-      @click="handleUserPanelClick"
-  >
-    <user-dropdown  placement="right-end"
-                    :disabled="!sidebarMenu.collapsed">
+    ">
+    <user-dropdown placement="right-end"
+                   :disabled="!sidebarMenu.collapsed">
       <div
           class="grid aspect-square place-items-center overflow-hidden rounded-full transition-[margin]"
           :class="{
@@ -30,7 +24,7 @@ const handleUserPanelClick = () => {
             class="flex items-center justify-center overflow-hidden transition-[height,width]"
             :class="sidebarMenu.collapsed ? 'w-8' : 'w-10'"
         >
-          <user-avatar />
+          <user-avatar/>
         </div>
       </div>
     </user-dropdown>
@@ -51,16 +45,15 @@ const handleUserPanelClick = () => {
           <span class="truncate text-sm">
             FzF
           </span>
-          <span class="truncate text-xs text-neutral-450 dark:text-neutral-500">
+          <span class="truncate text-xs text-gray-450 dark:text-gray-500">
             这里或许可以写点什么
           </span>
         </div>
 
         <UserDropdown placement="top">
-          <n-button>
-            设置
-            <span class="iconify text-neutral-500 ph--gear dark:text-neutral-450" />
-          </n-button>
+          <button-animation animation="rotate" title="设置">
+            <span class="i-mage:settings text-gray-500 dark:text-gray-450"/>
+          </button-animation>
         </UserDropdown>
       </div>
     </Transition>

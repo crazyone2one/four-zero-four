@@ -12,6 +12,8 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     AppLogo: typeof import('./../components/AppLogo.vue')['default']
+    ButtonAnimation: typeof import('./../components/button-animation/ButtonAnimation.vue')['default']
+    ButtonAnimationProvider: typeof import('./../components/button-animation/ButtonAnimationProvider.vue')['default']
     CollapseTransition: typeof import('./../components/collapse-transition/CollapseTransition.vue')['default']
     HelloWorld: typeof import('./../components/HelloWorld.vue')['default']
     NButton: typeof import('naive-ui')['NButton']
@@ -19,7 +21,9 @@ declare module 'vue' {
     NDialogProvider: typeof import('naive-ui')['NDialogProvider']
     NDropdown: typeof import('naive-ui')['NDropdown']
     NEl: typeof import('naive-ui')['NEl']
+    NFlex: typeof import('naive-ui')['NFlex']
     NGlobalStyle: typeof import('naive-ui')['NGlobalStyle']
+    NH2: typeof import('naive-ui')['NH2']
     NLayout: typeof import('naive-ui')['NLayout']
     NLayoutContent: typeof import('naive-ui')['NLayoutContent']
     NLayoutFooter: typeof import('naive-ui')['NLayoutFooter']
@@ -29,6 +33,7 @@ declare module 'vue' {
     NMessageProvider: typeof import('naive-ui')['NMessageProvider']
     NModalProvider: typeof import('naive-ui')['NModalProvider']
     NNotificationProvider: typeof import('naive-ui')['NNotificationProvider']
+    NResult: typeof import('naive-ui')['NResult']
     NScrollbar: typeof import('naive-ui')['NScrollbar']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']

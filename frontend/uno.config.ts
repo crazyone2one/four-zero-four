@@ -15,11 +15,8 @@ export default defineConfig({
         presetWind4(),
         presetAttributify(),
         presetIcons({
-            collections:{
-                async ms() {
-                    const icons = await import('@iconify-json/material-symbols/icons.json')
-                    return icons.default as any
-                }
+            collections: {
+                mage: () => import('@iconify-json/mage/icons.json').then(i => i.default)
             }
         }),
     ],
@@ -27,4 +24,5 @@ export default defineConfig({
         transformerDirectives(),
         transformerVariantGroup(),
     ],
+    safelist: ['mage:dashboard-chart', 'mage:settings']
 })

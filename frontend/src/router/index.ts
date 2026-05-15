@@ -14,7 +14,15 @@ const routes: RouteRecordRaw[] = [
         component: () => import('/@/layout/index.vue'),
         // if you need to have a redirect when accessing / routing
         redirect: '/dashboard',
-        children: [{path: '/dashboard', name: 'dashboard', component: () => import('/@/views/dashboard/index.vue')}],
+        children: [
+            {path: '/dashboard', name: 'Dashboard', component: () => import('/@/views/dashboard/index.vue')},
+            {
+                path: '/setting', name: 'Setting', children: [
+                    {path: 'project', name: 'Project', component: () => import('/@/views/setting/project/index.vue')},
+                    {path: 'user', name: 'User', component: () => import('/@/views/setting/user/index.vue')},
+                ]
+            },
+        ],
     }
 ]
 

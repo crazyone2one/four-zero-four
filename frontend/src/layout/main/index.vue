@@ -23,18 +23,18 @@ watch(
 </script>
 
 <template>
-  <router-view v-if="navigationTransition.enable"
-               v-slot="{ Component, route }">
-    <Transition :type="navigationTransitionName === 'shake' ? 'animation' : 'transition'"
-                :name="navigationTransitionName">
-      <keep-alive>
-        <component :is="Component"
-                   v-if="isMounted && !shouldRefreshRoute"
-                   :key="route.path + JSON.stringify(route.query)"/>
-      </keep-alive>
-    </Transition>
-  </router-view>
-  <router-view v-else/>
+<!--  <router-view v-if="navigationTransition.enable"-->
+<!--               v-slot="{ Component, route }">-->
+<!--    <Transition :type="navigationTransitionName === 'shake' ? 'animation' : 'transition'"-->
+<!--                :name="navigationTransitionName">-->
+<!--      <keep-alive>-->
+<!--        <component :is="Component"-->
+<!--                   v-if="isMounted && !shouldRefreshRoute"-->
+<!--                   :key="route.path + JSON.stringify(route.query)"/>-->
+<!--      </keep-alive>-->
+<!--    </Transition>-->
+<!--  </router-view>-->
+  <router-view />
 </template>
 
 <style scoped>
