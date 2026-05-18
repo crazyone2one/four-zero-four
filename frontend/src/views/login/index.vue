@@ -1,9 +1,11 @@
 <script setup lang="ts">
-
+import Animated from './animated/index.vue'
 </script>
 
 <template>
-login
+  <div>
+    <animated/>
+  </div>
 </template>
 
 <style scoped>
