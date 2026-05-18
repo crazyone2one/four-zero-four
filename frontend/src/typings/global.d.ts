@@ -15,7 +15,7 @@ declare module '*.vue' {
 declare namespace App {
     type lang = 'zhCN' | 'enUS'
 }
-
+declare type LocaleType = 'zh-CN' | 'en-US';
 interface ImportMetaEnv {
     readonly VITE_APP_TITLE: string
     // 更多环境变量...
