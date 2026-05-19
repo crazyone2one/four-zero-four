@@ -13,5 +13,7 @@ export const authApi = {
         method.meta = {authRole: 'refreshToken'};
         return method
     },
-    isLogin: () => FZFR.Get<IUserState>('/is-login')
+    isLogin: () => FZFR.Get<IUserState>('/is-login'),
+    demo: () => FZFR.Get('/demo'),
+    logout: () => FZFR.Post('/logout'),
 }

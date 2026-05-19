@@ -19,7 +19,7 @@ const {form: model, loading, send} = useForm(formData => authApi.login(formData)
 const toLayout = async () => {
   const {redirect, ...othersQuery} = router.currentRoute.value.query;
   await router.push({
-    name: redirect as string,
+    name: redirect ? redirect as string : 'Dashboard',
     query: {
       ...othersQuery,
     },

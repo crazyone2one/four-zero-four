@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import {useUserStore} from "/@/stores";
+import {useRequest} from "alova/client";
+import {authApi} from "/@/api/modules/auth";
+import {useI18n} from "vue-i18n";
 
+const {t} = useI18n();
 const userDropdownOptions = [
   {
     icon: () => h('span', {class: 'i-mage:user size-5'}),
@@ -14,13 +18,17 @@ const userDropdownOptions = [
   },
 ]
 const {cleanup} = useUserStore()
+const {send: fetchSignOut} = useRequest(() => authApi.logout(), {immediate: false})
 const onUserDropdownSelected = (key: string) => {
   switch (key) {
     case 'user':
       window.$message.info('点击了个人中心')
       break
     case 'signOut':
-      cleanup()
+      fetchSignOut().then(() => {
+        window.$message.success(t('message.logoutSuccess'))
+        cleanup(undefined)
+      })
       break
     default:
       break

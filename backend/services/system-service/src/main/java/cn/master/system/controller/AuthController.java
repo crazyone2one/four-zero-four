@@ -77,8 +77,14 @@ public class AuthController {
         return ResultHolder.success(tokenProvider.generateToken(authentication.getName()));
     }
 
+    @GetMapping("/demo")
+    public String demo() {
+        return "demo";
+    }
+
     @PostMapping("/refresh-token")
     public ResultHolder refreshToken(@RequestBody RefreshDTO refreshToken) {
+
         LoginResultDTO result = tokenProvider.refreshAccessToken(refreshToken.refreshToken());
         if (result == null) {
             return ResultHolder.error(401, "Refresh token 无效或已过期");

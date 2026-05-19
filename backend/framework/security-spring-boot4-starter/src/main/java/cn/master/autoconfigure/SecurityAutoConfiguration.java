@@ -3,6 +3,7 @@ package cn.master.autoconfigure;
 import cn.master.security.exception.JwtAccessDeniedHandler;
 import cn.master.security.exception.JwtAuthenticationEntryPoint;
 import cn.master.security.filter.JwtAuthenticationFilter;
+import cn.master.security.handler.CustomLogoutSuccessHandler;
 import cn.master.security.jwt.JwtTokenProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -65,9 +66,22 @@ public class SecurityAutoConfiguration {
         httpSecurity.exceptionHandling(e -> e
                 .authenticationEntryPoint(entryPoint)
                 .accessDeniedHandler(deniedHandler));
+        httpSecurity.logout(logout -> logout
+                .logoutUrl("/logout")
+                .logoutSuccessHandler(customLogoutSuccessHandler(jwtTokenProvider(securityProperties)))
+                .invalidateHttpSession(false)
+                .clearAuthentication(false)
+                .deleteCookies()
+        );
         httpSecurity.addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class);
         httpSecurity.authenticationManager(authenticationManager());
         return httpSecurity.build();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public CustomLogoutSuccessHandler customLogoutSuccessHandler(JwtTokenProvider tokenProvider) {
+        return new CustomLogoutSuccessHandler(tokenProvider);
     }
 
     @Bean
