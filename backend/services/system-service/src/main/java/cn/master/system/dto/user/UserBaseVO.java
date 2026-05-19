@@ -52,4 +52,5 @@ public class UserBaseVO implements Serializable {
     private String phone;
     @Schema(description = "当前项目ID")
     private String lastProjectId;
+    private String language;
 }

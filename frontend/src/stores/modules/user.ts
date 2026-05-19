@@ -1,19 +1,18 @@
 import {acceptHMRUpdate, defineStore, storeToRefs} from "pinia";
 import {useStorage} from "@vueuse/core";
-import type {IUserInfo} from "/@/typings/user.ts";
+import type {IUserState} from "/@/typings/user.ts";
 import {pinia} from "/@/stores";
 import router from "/@/router";
 import {clearToken} from "/@/utils/storage.ts";
 
-const userInfo: IUserInfo = {
+const userInfo: IUserState = {
     avatar: '',
-    id: 1,
-    name: 'Lithe User',
-    role: 'user',
+    id: "",
+    name: '',
     token: null,
 }
 export const useUserStore = defineStore("userStore", () => {
-    const user = useStorage<IUserInfo>("user", userInfo);
+    const user = useStorage<IUserState>("user", userInfo);
     const cleanup = (redirectPath?: string) => {
         router.replace({
             name: 'signIn',
@@ -21,7 +20,13 @@ export const useUserStore = defineStore("userStore", () => {
         })
         clearToken()
     }
-    return {user, cleanup}
+    const isAdmin = () => {
+        if (!user.value.userRolePermissions) {
+            return false
+        }
+        return user.value.userRolePermissions.some(permission => permission.userRole.id === 'admin')
+    }
+    return {user, cleanup, isAdmin}
 })
 
 export function toRefsUserStore() {

@@ -9,6 +9,7 @@ import {pinia} from "/@/stores";
 import router from './router'
 import {checkVersion} from "/@/utils/check-version.ts";
 import {setupI18n} from "/@/i18n";
+import {setupRouterGuard} from "/@/router/guard.ts";
 
 const setupApp = async () => {
     checkVersion()
@@ -16,6 +17,7 @@ const setupApp = async () => {
     await setupI18n(app)
     app.use(pinia)
     app.use(router)
+    setupRouterGuard(router)
     app.mount('#app')
 }
 setupApp().then(() => {

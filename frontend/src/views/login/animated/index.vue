@@ -1,14 +1,42 @@
 <script setup lang="ts">
 import styles from './index.module.css';
 import AnimatedCharacters from '/@/components/animated-characters/index.vue'
+import {useForm} from "alova/client";
+import {authApi} from "/@/api/modules/auth";
+import {setToken} from "/@/utils/storage.ts";
+import type {FormInst} from "naive-ui";
+import router from "/@/router";
 
 const isTyping = ref(false)
 const showPassword = ref(false)
-
-const model = ref({
-  username: '',
-  password: '',
+const loginFormRef = ref<FormInst | null>(null)
+const {form: model, loading, send} = useForm(formData => authApi.login(formData), {
+  initialForm: {
+    username: '',
+    password: ''
+  }
 })
+const toLayout = async () => {
+  const {redirect, ...othersQuery} = router.currentRoute.value.query;
+  await router.push({
+    name: redirect as string,
+    query: {
+      ...othersQuery,
+    },
+  });
+}
+const handleLogin = () => {
+  loginFormRef.value?.validate(err => {
+    if (!err) {
+      send().then(async res => {
+        const {accessToken, refreshToken} = res
+        setToken(accessToken, refreshToken)
+        await authApi.isLogin()
+        await toLayout()
+      })
+    }
+  })
+}
 </script>
 
 <template>
@@ -75,30 +103,46 @@ const model = ref({
         <div :class="styles.formHeader">
           <h1 :class="styles.formHeader">登录到工作台</h1>
         </div>
-        <n-form ref="formRef"
-                :model="model" label-placement="left"
+        <n-form ref="loginFormRef"
+                :model="model"
+                label-placement="left"
                 label-width="auto"
                 require-mark-placement="right-hanging"
                 size="large"
                 :class="styles.form">
-          <n-form-item label="账号" :content-class="styles.fieldLabel">
-            <n-input v-model:value="model.username" type="text" placeholder="请输入用户名"
+          <n-form-item :class="styles.fieldLabel" path="username"
+                       :rule="[{required: true, message: $t('login.form.userName.errMsg'), trigger: ['input']}]">
+            <n-input v-model:value="model.username" type="text" :placeholder="$t('login.form.userName.placeholder')"
                      @blur="()=>isTyping=false"
                      @focus="()=>isTyping=true">
+              <template #prefix>
+                <n-icon>
+                  <div class="i-mage:user"/>
+                </n-icon>
+              </template>
             </n-input>
           </n-form-item>
-          <n-form-item label="密码">
-            <n-input v-model:value="model.password" :type="showPassword ? 'text' : 'password'" placeholder="请输入密码">
+          <n-form-item path="password"
+                       :rule="[{required: true, message: $t('login.form.password.errMsg'), trigger: ['input']}]">
+            <n-input v-model:value="model.password" :type="showPassword ? 'text' : 'password'"
+                     :placeholder="$t('login.form.password.placeholder')">
+              <template #prefix>
+                <n-icon>
+                  <div class="i-mage:lock"/>
+                </n-icon>
+              </template>
               <template #suffix>
                 <n-icon @click="showPassword = !showPassword">
                   <div :class="showPassword?'i-mage:eye':'i-mage:eye-off'"/>
-                  <!--                  <span class="i-mage:eye-off" v-else/>-->
                 </n-icon>
               </template>
             </n-input>
           </n-form-item>
           <n-form-item style="{margin-bottom: 0}">
-            <n-button type="primary" block>{{ isTyping ? '登录中...' : '登录' }}</n-button>
+            <n-button type="primary" block :loading="loading" :class="styles.submitBtn"
+                      @click="handleLogin">
+              {{ loading ? $t('login.form.loading') : $t('login.form.login') }}
+            </n-button>
           </n-form-item>
         </n-form>
         <div :class="styles.signupRow">

@@ -25,7 +25,7 @@ export interface IPageResponse<T> {
     records: T[];
 }
 export interface ILogin {
-    userName: string
+    username: string
     password: string
 }
 export interface IAuthenticationResponse {

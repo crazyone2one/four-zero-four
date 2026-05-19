@@ -1,12 +1,12 @@
-import { createAlova } from "alova";
-import { createServerTokenAuthentication } from "alova/client";
+import {createAlova} from "alova";
+import {createServerTokenAuthentication} from "alova/client";
 import adapterFetch from "alova/fetch";
-import type { VueHookType } from "alova/vue";
+import type {VueHookType} from "alova/vue";
 import vueHook from "alova/vue";
-import { getToken } from "/@/utils/storage";
-import { handleRefreshToken } from "./helper";
+import {getToken} from "/@/utils/storage";
+import {handleRefreshToken} from "./helper";
 
-const { onAuthRequired, onResponseRefreshToken } = createServerTokenAuthentication<VueHookType>({
+const {onAuthRequired, onResponseRefreshToken} = createServerTokenAuthentication<VueHookType>({
     refreshTokenOnSuccess: {
         isExpired: async (response, method) => {
             const res = await response.clone().json()
@@ -24,18 +24,19 @@ const { onAuthRequired, onResponseRefreshToken } = createServerTokenAuthenticati
     }
 })
 const FZFR = createAlova({
+    baseURL: `${window.location.origin}/${import.meta.env.VITE_API_BASE_URL as string}`,
     statesHook: vueHook,
     requestAdapter: adapterFetch(),
     cacheFor: null,
     timeout: 300 * 1000,
     beforeRequest: onAuthRequired((method) => {
-        method.config.headers = { ...method.config.headers, };
+        method.config.headers = {...method.config.headers,};
     }),
     responded: onResponseRefreshToken({
         onSuccess: async (response, method) => {
-            const { status } = response
+            const {status} = response
             if (status === 200) {
-                if (method.meta.isBlob) {
+                if (method.meta?.isBlob) {
                     return response.blob()
                 }
                 // 解析 JSON 数据
@@ -49,6 +50,9 @@ const FZFR = createAlova({
                     // 成功响应，返回数据部分
                     return data.data !== undefined ? data.data : data;
                 }
+            } else {
+                const res = await response.clone().json()
+                window.$message?.error(res.message)
             }
         },
         onError: (error, method) => {
