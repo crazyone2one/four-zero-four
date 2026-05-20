@@ -3,8 +3,8 @@ import {setLoadLocalePool} from "/@/i18n/helper.ts";
 import type {App} from "vue";
 
 export const LOCALE_OPTIONS = [
-    {label: '中文', value: 'zh-CN'},
-    {label: 'English', value: 'en-US'},
+    {label: '中文', key: 'zh-CN'},
+    {label: 'English', key: 'en-US'},
 ];
 export let i18n: ReturnType<typeof createI18n>;
 

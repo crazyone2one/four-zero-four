@@ -10,12 +10,12 @@ const userDropdownOptions = [
   {
     icon: () => h('span', {class: 'i-mage:user size-5'}),
     key: 'user',
-    label: '个人中心',
+    label: t('personal.center'),
   },
   {
     icon: () => h('span', {class: 'i-mage:logout size-5'}),
     key: 'signOut',
-    label: '退出登录',
+    label: t('personal.exit'),
   },
 ]
 const {cleanup} = useUserStore()

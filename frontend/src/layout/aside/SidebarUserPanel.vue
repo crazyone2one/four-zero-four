@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import {toRefsPreferencesStore} from "/@/stores";
+import {toRefsPreferencesStore, toRefsUserStore} from "/@/stores";
 import {ButtonAnimation} from "/@/components/button-animation";
 
 const {sidebarMenu} = toRefsPreferencesStore()
+const {user}=toRefsUserStore()
 
 </script>
 
@@ -43,7 +44,7 @@ const {sidebarMenu} = toRefsPreferencesStore()
       >
         <div class="flex flex-col gap-y-px overflow-hidden">
           <span class="truncate text-sm">
-            FzF
+            {{user.name}}
           </span>
           <span class="truncate text-xs text-gray-450 dark:text-gray-500">
             这里或许可以写点什么

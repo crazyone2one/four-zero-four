@@ -1,6 +1,21 @@
 <script setup lang="ts">
 
 import PreferencesDrawer from "/@/layout/header/action/PreferencesDrawer.vue";
+import {LOCALE_OPTIONS} from "/@/i18n";
+import useLocale from "/@/i18n/use-locale.ts";
+import type {DropdownOption} from "naive-ui";
+import {userApi} from "/@/api/modules/user-api.ts";
+
+const {changeLocale, currentLocale} = useLocale();
+const renderDropdownIcon = (option: DropdownOption) => {
+  if (currentLocale.value === option.key) {
+    return h("div", {class: 'i-mage:check-circle text-green'})
+  }
+}
+const handleSwitchLanguage = async (key: string) => {
+  await userApi.updateLanguage({language: key});
+  await changeLocale(key as LocaleType);
+}
 </script>
 
 <template>
@@ -22,6 +37,14 @@ import PreferencesDrawer from "/@/layout/header/action/PreferencesDrawer.vue";
     <button-animation :animation="false">
       <span class="i-mage:gem-stone"/>
     </button-animation>
+    <n-dropdown trigger="click" :options="[...LOCALE_OPTIONS]"
+                :render-icon="renderDropdownIcon"
+                @select="handleSwitchLanguage">
+      <button-animation :animation="false" :title="$t('settings.language')">
+        <span class="i-fzf:translate"/>
+      </button-animation>
+    </n-dropdown>
+
     <preferences-drawer/>
   </div>
 </template>

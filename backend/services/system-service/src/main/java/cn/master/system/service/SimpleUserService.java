@@ -1,5 +1,6 @@
 package cn.master.system.service;
 
+import cn.master.system.dto.request.PersonalLocaleRequest;
 import cn.master.system.dto.user.UserBaseVO;
 import cn.master.system.dto.user.UserDTO;
 import cn.master.system.dto.user.UserRolePermissionDTO;
@@ -9,6 +10,7 @@ import cn.master.system.entity.UserRole;
 import cn.master.system.entity.UserRolePermission;
 import cn.master.system.entity.UserRoleRelation;
 import com.mybatisflex.core.query.QueryChain;
+import com.mybatisflex.core.update.UpdateChain;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.security.authentication.DisabledException;
@@ -68,5 +70,12 @@ public class SimpleUserService {
 
     public void autoSwitch(UserDTO userDTO) {
 
+    }
+
+    public void updateLanguage(PersonalLocaleRequest request, String operator) {
+        UpdateChain.of(SystemUser.class)
+                .set(SystemUser::getLanguage, request.language())
+                .where(SystemUser::getId).eq(operator)
+                .update();
     }
 }

@@ -3,31 +3,31 @@ import type {MenuInst, MenuOption} from "naive-ui";
 import {toRefsPreferencesStore} from "/@/stores";
 import {RouterLink} from "vue-router";
 import router from '/@/router'
+import {useI18n} from "/@/composables/useI18n.ts";
 
 const menuRef = useTemplateRef<MenuInst>('menuRef');
 const menuActiveKey = ref('')
 const {sidebarMenu} = toRefsPreferencesStore()
-const renderLink = (key: string) => {
-  return () => h(RouterLink, {to: {name: key}}, {default: () => key})
-}
+const {t} = useI18n()
+
 const menuOptions: MenuOption[] = [
   {
-    label: renderLink('Dashboard'),
+    label: () => h(RouterLink, {to: {name: 'Dashboard'}}, {default: () => t('menu.workbench')}),
     key: 'Dashboard',
     icon: () => h('div', {class: 'i-mage:dashboard-chart'})
   },
   {
-    label: "Setting",
+    label: t('menu.settings'),
     key: 'Setting',
     icon: () => h('div', {class: 'i-mage:settings'}),
     children: [
       {
-        label: renderLink('Project'),
+        label: () => h(RouterLink, {to: {name: 'Project'}}, {default: () => t('menu.projectManagement')}),
         key: 'Project',
         icon: () => h('div', {class: 'i-mage:dashboard-chart'})
       },
       {
-        label: () => h(RouterLink, {to: {name: 'User'}}, {default: () => 'User'}),
+        label: () => h(RouterLink, {to: {name: 'User'}}, {default: () => t('menu.settings.system.user')}),
         key: 'User',
         icon: () => h('div', {class: 'i-mage:users'})
       }
