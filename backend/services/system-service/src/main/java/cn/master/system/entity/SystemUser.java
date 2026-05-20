@@ -1,5 +1,6 @@
 package cn.master.system.entity;
 
+import com.mybatisflex.annotation.Column;
 import com.mybatisflex.annotation.Id;
 import com.mybatisflex.annotation.Table;
 import java.io.Serializable;
@@ -65,12 +66,14 @@ public class SystemUser implements Serializable {
      * 创建时间
      */
     @Schema(description = "创建时间")
+    @Column(onInsertValue = "now()")
     private LocalDateTime createTime;
 
     /**
      * 更新时间
      */
     @Schema(description = "更新时间")
+    @Column(onInsertValue = "now()", onUpdateValue = "now()")
     private LocalDateTime updateTime;
 
     /**

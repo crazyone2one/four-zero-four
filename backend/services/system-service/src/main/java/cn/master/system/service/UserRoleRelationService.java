@@ -3,13 +3,9 @@ package cn.master.system.service;
 import cn.master.system.dto.user.UserTableVO;
 import cn.master.system.entity.SystemUser;
 import cn.master.system.entity.UserRoleRelation;
-import cn.master.validation.groups.Created;
-import cn.master.validation.groups.Updated;
 import com.mybatisflex.core.service.IService;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.Size;
 
 import java.util.List;
 import java.util.Map;
@@ -21,7 +17,7 @@ import java.util.Map;
  * @since 2026-05-13
  */
 public interface UserRoleRelationService extends IService<UserRoleRelation> {
-    void addUserRoleRelation(List<String> userIds, List<String> roleIds);
+    void addUserRoleRelation(List<String> userIds, List<String> roleIds, String operator);
 
     void deleteByUserIdList(List<String> userIdList);
 

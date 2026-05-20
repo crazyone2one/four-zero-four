@@ -47,3 +47,22 @@ export interface IUserRoleRelation {
     userRolePermissions: IPermissionsItem[];
     userRole: IUserRole;
 }
+
+export interface ISimpleUserInfo {
+    id?: string;
+    name: string;
+    email: string;
+    phone?: string;
+}
+
+export interface ICreateUserParams {
+    userInfoList: ISimpleUserInfo[];
+    userRoleIdList: string[];
+}
+
+export interface ISystemRole {
+    id: string;
+    name: string;
+    selected: boolean; // 是否可选
+    closeable: boolean; // 是否可取消
+}

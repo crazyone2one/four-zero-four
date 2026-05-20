@@ -1,5 +1,6 @@
 package cn.master.system.service;
 
+import cn.master.system.dto.UserSelectOption;
 import cn.master.system.entity.UserRoleRelation;
 import com.mybatisflex.core.service.IService;
 import cn.master.system.entity.UserRole;
@@ -18,4 +19,6 @@ public interface UserRoleService extends IService<UserRole> {
     void checkRoleIsGlobalAndHaveMember(@Valid @NotEmpty List<String> roleIdList, boolean isSystem);
 
     List<UserRole> selectByUserRoleRelations(List<UserRoleRelation> userRoleRelations);
+
+    List<UserSelectOption> getGlobalSystemRoleList();
 }

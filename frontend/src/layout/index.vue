@@ -25,7 +25,7 @@ const {appStore}=toRefsAppStore()
                         @expand="sidebarMenu.collapsed=false">
           <sidebar-menu/>
         </n-layout-sider>
-        <n-layout content-style="padding: 24px;" :native-scrollbar="false">
+        <n-layout content-style="padding: 12px;" :native-scrollbar="false">
           <n-spin :show="appStore.loading" :size="50">
             <main-layout/>
             <template #description>

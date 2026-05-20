@@ -48,7 +48,7 @@ public class UserRoleRelationServiceImpl extends ServiceImpl<UserRoleRelationMap
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void addUserRoleRelation(List<String> userIds, List<String> roleIds) {
+    public void addUserRoleRelation(List<String> userIds, List<String> roleIds, String operator) {
         List<UserRoleRelation> userRoleRelations = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(roleIds)) {
             userIds.forEach(userId -> {
@@ -59,6 +59,7 @@ public class UserRoleRelationServiceImpl extends ServiceImpl<UserRoleRelationMap
                     userRoleRelation.setSourceId("system");
                     checkExist(userRoleRelation);
                     userRoleRelation.setOrganizationId("system");
+                    userRoleRelation.setCreateUser(operator);
                     userRoleRelations.add(userRoleRelation);
                 });
             });

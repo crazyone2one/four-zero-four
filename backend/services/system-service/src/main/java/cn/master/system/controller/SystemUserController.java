@@ -4,9 +4,11 @@ import cn.master.dto.BasePageRequest;
 import cn.master.dto.BatchProcessDTO;
 import cn.master.dto.BatchProcessResponse;
 import cn.master.security.util.SecurityUtils;
+import cn.master.system.dto.UserSelectOption;
 import cn.master.system.dto.user.*;
 import cn.master.system.entity.SystemUser;
 import cn.master.system.service.SystemUserService;
+import cn.master.system.service.UserRoleService;
 import cn.master.validation.groups.Created;
 import cn.master.validation.groups.Updated;
 import com.mybatisflex.core.paginate.Page;
@@ -32,6 +34,7 @@ import java.util.List;
 public class SystemUserController {
 
     private final SystemUserService systemUserService;
+    private final UserRoleService userRoleService;
 
     @PostMapping("save")
     @Operation(summary = "系统设置-系统-用户-添加用户")
@@ -86,4 +89,9 @@ public class SystemUserController {
         return systemUserService.getUserPage(request);
     }
 
+    @GetMapping("/get/global/system/role")
+    @Operation(summary = "系统设置-系统-用户-查找系统级用户组")
+    public List<UserSelectOption> getGlobalSystemRole() {
+        return userRoleService.getGlobalSystemRoleList();
+    }
 }

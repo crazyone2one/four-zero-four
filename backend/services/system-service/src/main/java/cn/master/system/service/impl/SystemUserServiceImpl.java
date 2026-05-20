@@ -205,7 +205,7 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
             mapper.insertSelective(user);
             userIdList.add(user.getId());
         });
-        userRoleRelationService.addUserRoleRelation(userIdList, userCreateDTO.userRoleIdList());
+        userRoleRelationService.addUserRoleRelation(userIdList, userCreateDTO.userRoleIdList(), operator);
     }
 
     private Map<String, String> validateUserInfo(Collection<String> createEmails) {
