@@ -1,5 +1,6 @@
 package cn.master.system.service;
 
+import cn.master.system.dto.user.UserBaseVO;
 import cn.master.system.dto.user.UserDTO;
 import cn.master.system.dto.user.UserRolePermissionDTO;
 import cn.master.system.dto.user.UserRoleResourceDTO;
@@ -37,6 +38,10 @@ public class SimpleUserService {
         userDTO.setUserRoles(dto.getUserRoles());
         userDTO.setUserRolePermissions(dto.getList());
         return userDTO;
+    }
+
+    public UserBaseVO getUserBase(String userId) {
+        return QueryChain.of(SystemUser.class).where(SystemUser::getId).eq(userId).oneAs(UserBaseVO.class);
     }
 
     private UserRolePermissionDTO getUserRolePermission(String userId) {

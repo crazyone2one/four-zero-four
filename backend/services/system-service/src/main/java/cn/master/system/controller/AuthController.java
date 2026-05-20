@@ -27,6 +27,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -74,7 +76,12 @@ public class AuthController {
                                 StringUtils.trim(dto.username()),
                                 StringUtils.trim(dto.password()))
                 );
-        return ResultHolder.success(tokenProvider.generateToken(authentication.getName()));
+        LoginResultDTO loginResultDTO = tokenProvider.generateToken(authentication.getName());
+        Map<String, Object> result = new HashMap<>();
+        result.put("accessToken", loginResultDTO.accessToken());
+        result.put("refreshToken", loginResultDTO.refreshToken());
+        result.put("user", simpleUserService.getUser(SecurityUtils.getUserId()));
+        return ResultHolder.success(result);
     }
 
     @GetMapping("/demo")

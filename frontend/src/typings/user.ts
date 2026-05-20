@@ -12,7 +12,6 @@ export interface IUserState {
     userRolePermissions?: IUserRolePermissions[];
     userRoles?: IUserRole[];
     userRoleRelations?: IUserRoleRelation[];
-    token: string | null
 }
 
 export interface IUserRolePermissions {

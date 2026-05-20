@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import {toRefsPreferencesStore} from '../stores';
+import {toRefsAppStore, toRefsPreferencesStore} from '../stores';
 import MainLayout from './main/index.vue'
 import HeaderLayout from './header/index.vue'
 import SidebarMenu from "/@/layout/aside/index.vue";
 
 const {sidebarMenu, preferences} = toRefsPreferencesStore()
+const {appStore}=toRefsAppStore()
 </script>
 
 <template>
@@ -25,7 +26,13 @@ const {sidebarMenu, preferences} = toRefsPreferencesStore()
           <sidebar-menu/>
         </n-layout-sider>
         <n-layout content-style="padding: 24px;" :native-scrollbar="false">
-          <main-layout/>
+          <n-spin :show="appStore.loading" :size="50">
+            <main-layout/>
+            <template #description>
+              {{ appStore.loadingTip}}
+            </template>
+          </n-spin>
+
         </n-layout>
       </n-layout>
       <n-layout-footer v-show="preferences.showFooter"

@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import {useUserStore} from "/@/stores";
+import {useAppStore, useUserStore} from "/@/stores";
 import {useRequest} from "alova/client";
 import {authApi} from "/@/api/modules/auth";
 import {useI18n} from "vue-i18n";
+import {removeRouteListener} from "/@/utils/route-listener.ts";
 
 const {t} = useI18n();
 const userDropdownOptions = [
@@ -18,6 +19,7 @@ const userDropdownOptions = [
   },
 ]
 const {cleanup} = useUserStore()
+const appStore = useAppStore()
 const {send: fetchSignOut} = useRequest(() => authApi.logout(), {immediate: false})
 const onUserDropdownSelected = (key: string) => {
   switch (key) {
@@ -25,9 +27,12 @@ const onUserDropdownSelected = (key: string) => {
       window.$message.info('点击了个人中心')
       break
     case 'signOut':
+      appStore.showLoading(t('message.logouting'))
       fetchSignOut().then(() => {
         window.$message.success(t('message.logoutSuccess'))
         cleanup(undefined)
+        removeRouteListener()
+        appStore.hideLoading()
       })
       break
     default:

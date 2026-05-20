@@ -9,8 +9,8 @@ malo:
     enabled: false
   security:
     secret-key: a3f8b2c1d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1
-    access-expire: 60
-    refresh-expire: 604800
+    access-expire: 7200
+    refresh-expire: 86400
     ignore-paths:
       - /login
       - /refresh-token
@@ -21,4 +21,5 @@ springdoc:
     enabled: false
 logging:
   level:
-    root: debug
+    root: info
+    cn.master: debug

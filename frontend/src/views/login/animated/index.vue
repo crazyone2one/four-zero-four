@@ -6,7 +6,9 @@ import {authApi} from "/@/api/modules/auth";
 import {setToken} from "/@/utils/storage.ts";
 import type {FormInst} from "naive-ui";
 import router from "/@/router";
+import {useAppStore, useUserStore} from "/@/stores";
 
+const {appStore} = useAppStore()
 const isTyping = ref(false)
 const showPassword = ref(false)
 const loginFormRef = ref<FormInst | null>(null)
@@ -29,9 +31,11 @@ const handleLogin = () => {
   loginFormRef.value?.validate(err => {
     if (!err) {
       send().then(async res => {
-        const {accessToken, refreshToken} = res
+        const {accessToken, refreshToken, user} = res
         setToken(accessToken, refreshToken)
-        await authApi.isLogin()
+        useUserStore().user = user
+        appStore.currentOrgId = user.lastOrganizationId || '';
+        appStore.currentProjectId = user.lastProjectId || '';
         await toLayout()
       })
     }

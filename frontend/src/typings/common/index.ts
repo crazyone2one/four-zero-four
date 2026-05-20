@@ -1,3 +1,5 @@
+import type {IUserState} from "/@/typings/user.ts";
+
 export interface ITableQueryParams {
     // 当前页
     page?: number;
@@ -31,4 +33,5 @@ export interface ILogin {
 export interface IAuthenticationResponse {
     accessToken: string;
     refreshToken: string;
+    user?: IUserState;
 }
