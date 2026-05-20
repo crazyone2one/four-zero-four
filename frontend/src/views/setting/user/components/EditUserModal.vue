@@ -40,7 +40,8 @@ const batchFormModels: Ref<IFormItemModel[]> = ref([
     label: 'system.user.createUserEmail',
     rules: [
       {notRepeat: true, message: 'system.user.createUserEmailNoRepeat'},
-      {required: true,
+      {
+        required: true,
         validator(_, value: string) {
           if (!value) {
             return new Error(t('system.user.createUserEmailNotNull'))
@@ -120,14 +121,14 @@ const createUser = async (isContinue?: boolean) => {
           status: 'error',
           message: t('system.user.createUserEmailExist'),
         };
-      } else {
-        window.$message.success(t('system.user.addUserSuccess'));
-        if (!isContinue) {
-          cancelCreate();
-        }
-        emit('load');
       }
     });
+  } else {
+    window.$message.success(t('system.user.addUserSuccess'));
+    if (!isContinue) {
+      cancelCreate();
+    }
+    emit('load');
   }
 }
 const handleSaveUser = () => {
@@ -180,7 +181,8 @@ watch(() => showModal.value, (newValue) => {
                     add-text="system.user.addUser"
                     max-height="250px"
                     @change="handleBatchFormChange"/>
-        <n-form-item :label="$t('system.user.createUserUserGroup')" path="userGroup">
+        <n-form-item :label="$t('system.user.createUserUserGroup')" path="userGroup"
+                     :rule="[{ required: true, message: t('system.user.createUserUserGroupNotNull') }]">
           <n-select v-model:value="userForm.userGroup" :options="userGroupOptions"
                     multiple :placeholder="$t('system.user.createUserUserGroupPlaceholder')"
                     label-field="name" value-field="id"
