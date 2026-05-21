@@ -112,7 +112,7 @@ defineExpose({
   <n-form ref="formRef" :model="form">
     <div class="mb-[16px] overflow-y-auto rounded-[4px] border border-gray p-[12px]"
          :style="{ width: props.formWidth || '100%' }">
-      <n-scrollbar>
+      <n-scrollbar :style="{ 'max-height': props.maxHeight }">
         <n-flex v-for="(element, index) in form.list"
                 :key="`${element.field}${index}`"
                 class="w-full gap-[8px] py-[6px] pr-[8px]"
@@ -168,6 +168,7 @@ defineExpose({
 .hidden-item :deep(.n-form-item-label) {
   display: none !important;
 }
+
 .n-form-item.n-form-item--top-labelled {
   grid-template-rows: unset !important;
 }
