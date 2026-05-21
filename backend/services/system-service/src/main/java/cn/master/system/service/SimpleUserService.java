@@ -1,5 +1,6 @@
 package cn.master.system.service;
 
+import cn.master.dto.BatchProcessDTO;
 import cn.master.system.dto.request.PersonalLocaleRequest;
 import cn.master.system.dto.user.UserBaseVO;
 import cn.master.system.dto.user.UserDTO;
@@ -19,6 +20,8 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+
+import static cn.master.system.entity.table.SystemUserTableDef.SYSTEM_USER;
 
 /**
  * @author : 11's papa
@@ -77,5 +80,20 @@ public class SimpleUserService {
                 .set(SystemUser::getLanguage, request.language())
                 .where(SystemUser::getId).eq(operator)
                 .update();
+    }
+
+    public List<String> getBatchUserIds(BatchProcessDTO request) {
+        if (request.isSelectAll()) {
+            List<String> userIdList = new ArrayList<>(QueryChain.of(SystemUser.class).where(SYSTEM_USER.EMAIL.like(request.getCondition().getKeyword())
+                            .or(SYSTEM_USER.NAME.like(request.getCondition().getKeyword()))
+                            .or(SYSTEM_USER.PHONE.like(request.getCondition().getKeyword()))).list()
+                    .stream().map(SystemUser::getId).toList());
+            if (CollectionUtils.isNotEmpty(request.getExcludeIds())) {
+                userIdList.removeAll(request.getExcludeIds());
+            }
+            return userIdList;
+        } else {
+            return request.getSelectIds();
+        }
     }
 }

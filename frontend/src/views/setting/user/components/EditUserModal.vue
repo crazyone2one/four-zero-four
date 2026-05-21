@@ -14,11 +14,14 @@ interface UserForm {
 }
 
 const showModal = defineModel('showModal', {default: false})
-const {userFormMode = 'create'} = defineProps<{ userFormMode: 'create' | 'edit' }>()
+const {userFormMode = 'create', userGroupOptions = []} = defineProps<{
+  userFormMode: 'create' | 'edit',
+  userGroupOptions: ISystemRole[]
+}>()
 const {t} = useI18n()
 const emit = defineEmits(['load']);
 const batchFormRef = ref<InstanceType<typeof BatchForm>>();
-const userGroupOptions = ref<ISystemRole[]>([]);
+
 const batchFormModels: Ref<IFormItemModel[]> = ref([
   {
     field: 'name',
@@ -136,12 +139,7 @@ const handleSaveUser = () => {
     userFormValidate(createUser)
   }
 }
-const init = async () => {
-  userGroupOptions.value = await userApi.getSystemRoles();
-  if (userGroupOptions.value.length) {
-    userForm.value.userGroup = userGroupOptions.value.filter((e: ISystemRole) => e.selected).map((e: ISystemRole) => e.id);
-  }
-}
+
 const handleClose = () => {
   if (isBatchFormChange.value) {
     window.$dialog.warning({
@@ -157,9 +155,9 @@ const handleClose = () => {
     cancelCreate()
   }
 }
-watch(() => showModal.value, (newValue) => {
-  if (newValue) {
-    init()
+watch(() => userGroupOptions, (newValue) => {
+  if (newValue && newValue.length) {
+    userForm.value.userGroup = newValue.filter((e: ISystemRole) => e.selected).map((e: ISystemRole) => e.id);
   }
 })
 </script>

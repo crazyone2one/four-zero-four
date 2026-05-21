@@ -53,6 +53,7 @@ const FZFR = createAlova({
             } else {
                 const res = await response.clone().json()
                 window.$message?.error(res.message)
+                throw new Error(res.message);
             }
         },
         onError: (error, method) => {

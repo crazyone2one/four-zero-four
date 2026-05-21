@@ -1,17 +1,22 @@
+import type {IBatchApiParams} from "/@/typings/common";
+
 export type RoleType = '' | '*' | 'admin' | 'user';
 export type SystemScopeType = 'PROJECT' | 'ORGANIZATION' | 'SYSTEM';
 
 export interface IUserState {
     avatar?: string
     id?: string;
-    name?: string;
+    name: string;
     email?: string;
     phone?: string;
+    enable?: boolean;
     lastOrganizationId?: string;
     lastProjectId?: string;
     userRolePermissions?: IUserRolePermissions[];
     userRoles?: IUserRole[];
+    userRoleList?: IUserRole[];
     userRoleRelations?: IUserRoleRelation[];
+    selectUserGroupVisible?: boolean;
 }
 
 export interface IUserRolePermissions {
@@ -66,3 +71,8 @@ export interface ISystemRole {
     selected: boolean; // 是否可选
     closeable: boolean; // 是否可取消
 }
+
+export interface IUpdateUserStatusParams extends IBatchApiParams {
+    enable: boolean;
+}
+export type IDeleteUserParams = IBatchApiParams;

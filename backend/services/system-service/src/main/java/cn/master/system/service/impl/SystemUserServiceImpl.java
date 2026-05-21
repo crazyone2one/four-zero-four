@@ -10,10 +10,7 @@ import cn.master.system.entity.SystemUser;
 import cn.master.system.entity.UserRoleRelation;
 import cn.master.system.log.service.UserLogService;
 import cn.master.system.mapper.SystemUserMapper;
-import cn.master.system.service.OperationLogService;
-import cn.master.system.service.SystemUserService;
-import cn.master.system.service.UserRoleRelationService;
-import cn.master.system.service.UserRoleService;
+import cn.master.system.service.*;
 import cn.master.util.JsonUtils;
 import cn.master.util.StringUtils;
 import cn.master.util.Translator;
@@ -49,6 +46,7 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
     private final UserRoleRelationService userRoleRelationService;
     private final OperationLogService operationLogService;
     private final UserLogService userLogService;
+    private final SimpleUserService simpleUserService;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -95,9 +93,7 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
     @Override
     @Transactional(rollbackFor = Exception.class)
     public BatchProcessResponse deleteUser(BatchProcessDTO request, String operatorId, String operatorName) {
-        List<String> userIdList = new ArrayList<>(queryChain().where(SYSTEM_USER.EMAIL.like(request.getCondition().getKeyword())
-                        .or(SYSTEM_USER.NAME.like(request.getCondition().getKeyword()))).list()
-                .stream().map(SystemUser::getId).toList());
+        List<String> userIdList = simpleUserService.getBatchUserIds(request);
         checkUserInDb(userIdList);
         checkProcessUserAndThrowException(userIdList, operatorId, operatorName, Translator.get("user.not.delete"));
         mapper.deleteBatchByIds(userIdList);
