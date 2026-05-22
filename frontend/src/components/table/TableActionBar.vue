@@ -1,5 +1,5 @@
 <script setup lang="ts">
-
+defineOptions({name: 'TableActionBar'});
 import type {DropdownOption} from "naive-ui";
 import {useI18n} from "/@/composables/useI18n.ts";
 import type {IBatchActionConfig} from "/@/components/table/types.ts";
@@ -42,7 +42,11 @@ watch(() => actionConfig, (newValue) => {
         <slot name="count">
           {{ t('msTable.batch.selected', {count: selectRowCount}) }}
         </slot>
-        <n-button text class="clear-btn ml-[12px] px-2" disabled>{{ t('msTable.batch.clear') }}</n-button>
+        <n-button text class="clear-btn ml-[12px] px-2"
+                  :disabled="!(selectRowCount>0)"
+                  @click="emit('clear')">
+          {{ t('msTable.batch.clear') }}
+        </n-button>
       </span>
       <div v-if="showBatchAction" class="flex flex-grow items-center">
         <div v-if="actionConfig" class="flex flex-row flex-nowrap items-center">
