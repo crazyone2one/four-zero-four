@@ -1,5 +1,6 @@
 package cn.master.system.dto.project;
 
+import cn.master.system.dto.user.UserExtendDTO;
 import cn.master.system.entity.Project;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
@@ -7,6 +8,7 @@ import lombok.EqualsAndHashCode;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * @author : 11's papa
@@ -21,4 +23,8 @@ public class ProjectDTO extends Project implements Serializable {
     private Long memberCount;
     @Schema(description = "所属组织", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
     private String organizationName;
+    @Schema(description = "管理员", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+    private List<UserExtendDTO> adminList;
+    @Schema(description = "创建人是否是管理员", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+    private Boolean projectCreateUserIsAdmin;
 }

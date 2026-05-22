@@ -37,6 +37,7 @@ public class CustomUserDetailService implements UserDetailsService {
                 () -> QueryChain.of(UserRoleRelation.class)
                         .where(UserRoleRelation::getUserId).eq(systemUser.getId())
                         .list().stream().map(UserRoleRelation::getRoleId).toList());
-        return new SecurityUser(systemUser.getId(), systemUser.getName(), systemUser.getPassword(), roles);
+        return new SecurityUser(systemUser.getId(), systemUser.getName(), systemUser.getPassword(),
+                systemUser.getLastProjectId(), systemUser.getLastOrganizationId(), roles);
     }
 }

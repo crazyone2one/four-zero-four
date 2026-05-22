@@ -1,5 +1,6 @@
 package cn.master.system.controller;
 
+import cn.master.constants.OperationLogType;
 import cn.master.dto.BasePageRequest;
 import cn.master.dto.BatchProcessDTO;
 import cn.master.dto.BatchProcessResponse;
@@ -7,6 +8,8 @@ import cn.master.security.util.SecurityUtils;
 import cn.master.system.dto.UserSelectOption;
 import cn.master.system.dto.user.*;
 import cn.master.system.entity.SystemUser;
+import cn.master.system.log.annotation.Log;
+import cn.master.system.log.service.UserLogService;
 import cn.master.system.service.SystemUserService;
 import cn.master.system.service.UserRoleService;
 import cn.master.validation.groups.Created;
@@ -44,18 +47,21 @@ public class SystemUserController {
 
     @PostMapping("remove")
     @Operation(summary = "系统设置-系统-用户-删除用户")
+    @Log(type = OperationLogType.DELETE, expression = "#clazz.deleteLog(#request)", clazz = UserLogService.class)
     public BatchProcessResponse remove(@Validated @RequestBody BatchProcessDTO request) {
         return systemUserService.deleteUser(request, SecurityUtils.getUserId(), SecurityUtils.getUsername());
     }
 
     @PostMapping("update")
-    @Operation(description = "根据主键更新用户")
+    @Operation(summary = "系统设置-系统-用户-修改用户")
+    @Log(type = OperationLogType.UPDATE, expression = "#clazz.updateLog(#request)", clazz = UserLogService.class)
     public UserEditRequest update(@RequestBody @Validated({Updated.class}) UserEditRequest request) {
         return systemUserService.updateUser(request, SecurityUtils.getUserId());
     }
 
     @PostMapping("/update/enable")
     @Operation(summary = "系统设置-系统-用户-启用/禁用用户")
+    @Log(type = OperationLogType.UPDATE, expression = "#clazz.batchUpdateEnableLog(#request)", clazz = UserLogService.class)
     public BatchProcessResponse updateUserEnable(@Validated @RequestBody UserChangeEnableRequest request) {
         return systemUserService.updateUserEnable(request, SecurityUtils.getUserId(), SecurityUtils.getUsername());
     }

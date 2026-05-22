@@ -16,15 +16,23 @@ import java.util.List;
 public class SecurityUser implements UserDetails {
     @Getter
     private final String userId;
+    @Getter
+    private final String projectId;
+    @Getter
+    private final String organizationId;
     private final String username;
     private final String password;
     private final List<String> roles;
 
-    public SecurityUser(String userId, String username, String password, List<String> roles) {
+    public SecurityUser(String userId, String username, String password,
+                        String projectId, String organizationId,
+                        List<String> roles) {
         this.userId = userId;
         this.username = username;
         this.password = password;
         this.roles = roles;
+        this.projectId = projectId;
+        this.organizationId = organizationId;
     }
 
     @Override

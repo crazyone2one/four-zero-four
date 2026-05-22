@@ -1,6 +1,7 @@
 package cn.master.system.service;
 
 import cn.master.dto.BatchProcessDTO;
+import cn.master.system.dto.OptionDTO;
 import cn.master.system.dto.request.PersonalLocaleRequest;
 import cn.master.system.dto.user.UserBaseVO;
 import cn.master.system.dto.user.UserDTO;
@@ -11,15 +12,15 @@ import cn.master.system.entity.UserRole;
 import cn.master.system.entity.UserRolePermission;
 import cn.master.system.entity.UserRoleRelation;
 import com.mybatisflex.core.query.QueryChain;
+import com.mybatisflex.core.query.QueryMethods;
 import com.mybatisflex.core.update.UpdateChain;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static cn.master.system.entity.table.SystemUserTableDef.SYSTEM_USER;
 
@@ -95,5 +96,28 @@ public class SimpleUserService {
         } else {
             return request.getSelectIds();
         }
+    }
+
+    public List<OptionDTO> getSelectOptionByIdsWithDeleted(List<String> ids) {
+        return QueryChain.of(SystemUser.class).select(SYSTEM_USER.ID, SYSTEM_USER.NAME)
+                .where(SYSTEM_USER.ID.in(ids))
+                .listAs(OptionDTO.class);
+    }
+
+    public Map<String, String> getUserNameMap(List<String> ids) {
+        if (CollectionUtils.isEmpty(ids)) {
+            return Collections.emptyMap();
+        }
+        return getSelectOptionByIdsWithDeleted(ids)
+                .stream()
+                .collect(Collectors.toMap(OptionDTO::getId, OptionDTO::getName));
+    }
+
+    public List<SystemUser> getUserList(String keyword) {
+        return QueryChain.of(SystemUser.class)
+                .select(QueryMethods.distinct(SYSTEM_USER.ID, SYSTEM_USER.NAME, SYSTEM_USER.EMAIL))
+                .select(SYSTEM_USER.CREATE_TIME)
+                .where(SYSTEM_USER.NAME.like(keyword).or(SYSTEM_USER.EMAIL.like(keyword)))
+                .orderBy(SYSTEM_USER.CREATE_TIME.desc()).limit(1000).list();
     }
 }

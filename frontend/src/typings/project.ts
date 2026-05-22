@@ -2,31 +2,60 @@ import type {SelectOption} from "naive-ui";
 
 export interface IProjectBaseItem {
     id: string;
-    num: number;
+    num: string;
     organizationId: string;
     name: string;
     description: string;
+    enable: boolean;
 }
 
 export type IProjectOption = IProjectBaseItem & SelectOption
 
 export interface ICreateOrUpdateSystemProjectParams {
     id?: string;
-    // 项目名称
     name: string;
     num: string;
-    // 项目描述
     description: string;
-    // 启用或禁用
     enable: boolean;
-    // 项目成员
     userIds: string[];
-    // 模块配置
-    moduleIds?: string[];
-    // 所属组织
     organizationId?: string;
-    // 资源池
-    resourcePoolIds?: string[];
-    // 列表里的
-    allResourcePool?: boolean; // 默认全部资源池
+}
+
+export interface IProjectPageItem extends IProjectBaseItem {
+    memberCount: number;
+    organizationName: string;
+    adminList: AdminList[];
+    projectCreateUserIsAdmin: boolean;
+    createUser?: string;
+}
+
+export interface AdminList {
+    id: string;
+    name: string;
+    email: string;
+    password: string;
+    enable: boolean;
+    createTime: string;
+    updateTime: number;
+    language: string;
+    lastOrganizationId: string;
+    phone: string;
+    source: string;
+    lastProjectId: string;
+    createUser: string;
+    updateUser: string;
+    deleted: boolean; // 是否删除
+    adminFlag: boolean; // 是否组织/项目管理员
+    memberFlag: boolean; // 是否组织/项目成员
+    checkRoleFlag: boolean; // 是否属于用户组
+    sourceId: string; // 资源id
+}
+
+export interface IAddUserToOrgOrProjectParams {
+    userIds?: string[];
+    organizationId?: string;
+    projectId?: string;
+    // 等待接口改动 将要废弃，以后用userIds
+    memberIds?: string[];
+    userRoleIds?: string[];
 }

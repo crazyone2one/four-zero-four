@@ -3,8 +3,11 @@ package cn.master.system.service;
 import cn.master.constants.*;
 import cn.master.exception.FZFException;
 import cn.master.system.dto.project.ProjectDTO;
+import cn.master.system.dto.project.UpdateProjectNameRequest;
 import cn.master.system.dto.project.UpdateProjectRequest;
 import cn.master.system.dto.request.ProjectAddMemberBatchRequest;
+import cn.master.system.dto.request.ProjectAddMemberRequest;
+import cn.master.system.dto.user.UserExtendDTO;
 import cn.master.system.entity.Project;
 import cn.master.system.entity.SystemUser;
 import cn.master.system.entity.UserRoleRelation;
@@ -14,7 +17,9 @@ import cn.master.system.mapper.SystemUserMapper;
 import cn.master.system.mapper.UserRoleRelationMapper;
 import cn.master.util.JsonUtils;
 import cn.master.util.Translator;
+import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryChain;
+import com.mybatisflex.core.update.UpdateChain;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -23,6 +28,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -44,6 +50,7 @@ public class CommonProjectService {
     private final UserRoleRelationMapper userRoleRelationMapper;
     private final OperationLogService operationLogService;
     private final SystemUserMapper userMapper;
+    private final SimpleUserService simpleUserService;
 
     public ProjectDTO add(UpdateProjectRequest request, String createUser, String path, String module) {
         Project project = new Project();
@@ -123,9 +130,9 @@ public class CommonProjectService {
             Project project = projectMapper.selectOneById(projectId);
             Map<String, String> nameMap = addUserPre(request.getUserIds(), createUser, path, module, projectId, project);
             request.getUserIds().forEach(userId -> {
-                boolean exists = QueryChain.of(UserRoleRelation.class).where(USER_ROLE_RELATION.SOURCE_ID.eq(projectId)
-                                .and(USER_ROLE_RELATION.ROLE_ID.eq(InternalUserRole.PROJECT_ADMIN.getValue())))
-                        .exists();
+                boolean exists = QueryChain.of(UserRoleRelation.class)
+                        .where(USER_ROLE_RELATION.SOURCE_ID.eq(projectId)
+                                .and(USER_ROLE_RELATION.ROLE_ID.eq(InternalUserRole.PROJECT_ADMIN.getValue()))).exists();
                 if (!exists) {
                     UserRoleRelation adminRole = new UserRoleRelation();
                     adminRole.setUserId(userId);
@@ -210,5 +217,141 @@ public class CommonProjectService {
         if (exists) {
             throw new FZFException(Translator.get("project_name_already_exists"));
         }
+    }
+
+    public Page<ProjectDTO> buildUserInfo(Page<ProjectDTO> page) {
+        List<String> userIds = new ArrayList<>();
+        List<ProjectDTO> records = page.getRecords();
+        if (!records.isEmpty()) {
+            userIds.addAll(records.stream().map(ProjectDTO::getCreateUser).toList());
+            userIds.addAll(records.stream().map(ProjectDTO::getUpdateUser).toList());
+            userIds.addAll(records.stream().map(ProjectDTO::getDeleteUser).toList());
+            Map<String, String> userMap = simpleUserService.getUserNameMap(userIds.stream().filter(StringUtils::isNotBlank).distinct().toList());
+            List<String> projectIds = records.stream().map(ProjectDTO::getId).toList();
+            List<UserExtendDTO> users = getProjectAdminList(projectIds);
+            Map<String, List<UserExtendDTO>> userMapList = users.stream().collect(Collectors.groupingBy(UserExtendDTO::getSourceId));
+            List<ProjectDTO> projectDTOList = getProjectExtendDTOList(projectIds);
+            Map<String, ProjectDTO> projectMap = projectDTOList.stream().collect(Collectors.toMap(ProjectDTO::getId, projectDTO -> projectDTO));
+            page.getRecords().forEach(p -> {
+                p.setMemberCount(projectMap.get(p.getId()).getMemberCount());
+                List<UserExtendDTO> userExtendDTOS = userMapList.get(p.getId());
+                if (CollectionUtils.isNotEmpty(userExtendDTOS)) {
+                    p.setAdminList(userExtendDTOS);
+                    List<String> userIdList = userExtendDTOS.stream().map(UserExtendDTO::getId).collect(Collectors.toList());
+                    p.setProjectCreateUserIsAdmin(CollectionUtils.isNotEmpty(userIdList) && userIdList.contains(p.getCreateUser()));
+                } else {
+                    p.setAdminList(new ArrayList<>());
+                }
+                p.setCreateUser(userMap.get(p.getCreateUser()));
+                p.setUpdateUser(userMap.get(p.getUpdateUser()));
+                p.setDeleteUser(userMap.get(p.getDeleteUser()));
+            });
+        }
+        return page;
+    }
+
+    private List<ProjectDTO> getProjectExtendDTOList(List<String> projectIds) {
+        QueryChain<UserRoleRelation> temp = QueryChain.of(UserRoleRelation.class)
+                .select(USER_ROLE_RELATION.SOURCE_ID, SYSTEM_USER.ID)
+                .from(USER_ROLE_RELATION).leftJoin(SYSTEM_USER).on(SYSTEM_USER.ID.eq(USER_ROLE_RELATION.USER_ID))
+                .where(USER_ROLE_RELATION.SOURCE_ID.in(projectIds));
+        return QueryChain.of(Project.class).select(PROJECT.ID)
+                .select("count(distinct temp.id) as memberCount")
+                .from(PROJECT).as("p").leftJoin(temp).as("temp").on("p.id = temp.source_id")
+                .groupBy(PROJECT.ID)
+                .listAs(ProjectDTO.class);
+    }
+
+    private List<UserExtendDTO> getProjectAdminList(List<String> projectIds) {
+        return QueryChain.of(UserRoleRelation.class)
+                .select(SYSTEM_USER.ALL_COLUMNS, USER_ROLE_RELATION.SOURCE_ID)
+                .from(USER_ROLE_RELATION).leftJoin(SYSTEM_USER).on(SYSTEM_USER.ID.eq(USER_ROLE_RELATION.USER_ID))
+                .where(USER_ROLE_RELATION.SOURCE_ID.in(projectIds).and(USER_ROLE_RELATION.ROLE_ID.eq(InternalUserRole.PROJECT_ADMIN.getValue())))
+                .listAs(UserExtendDTO.class);
+    }
+
+    public void delete(String id, String deleteUser) {
+        checkProjectNotExist(id);
+        UpdateChain.of(Project.class).set(PROJECT.DELETED, true)
+                .set(PROJECT.DELETE_TIME, LocalDateTime.now())
+                .set(PROJECT.DELETE_USER, deleteUser)
+                .where(PROJECT.ID.eq(id)).update();
+    }
+
+    public void enable(String id, String updateUser) {
+        checkProjectNotExist(id);
+        UpdateChain.of(Project.class).set(PROJECT.ENABLE, true)
+                .set(PROJECT.UPDATE_USER, updateUser)
+                .where(PROJECT.ID.eq(id)).update();
+    }
+
+    public void disable(String id, String updateUser) {
+        checkProjectNotExist(id);
+        UpdateChain.of(Project.class).set(PROJECT.ENABLE, false)
+                .set(PROJECT.UPDATE_USER, updateUser)
+                .where(PROJECT.ID.eq(id)).update();
+    }
+
+    public void addProjectUser(ProjectAddMemberRequest request, String createUser, String path, String type, String content, String module) {
+        List<LogDTO> logDTOList = new ArrayList<>();
+        List<UserRoleRelation> userRoleRelations = new ArrayList<>();
+        Project project = projectMapper.selectOneById(request.getProjectId());
+        Map<String, String> userMap = addUserPre(request.getUserIds(), createUser, path, module, request.getProjectId(), project);
+        request.getUserIds().forEach(userId -> request.getUserRoleIds().forEach(userRoleId -> {
+            UserRoleRelation userRoleRelation = new UserRoleRelation();
+            userRoleRelation.setUserId(userId);
+            userRoleRelation.setRoleId(userRoleId);
+            userRoleRelation.setSourceId(request.getProjectId());
+            userRoleRelation.setCreateUser(createUser);
+            userRoleRelation.setOrganizationId(project.getOrganizationId());
+            userRoleRelations.add(userRoleRelation);
+            String logProjectId = OperationLogConstants.SYSTEM;
+            if (Strings.CS.equals(module, OperationLogModule.SETTING_ORGANIZATION_PROJECT)) {
+                logProjectId = OperationLogConstants.ORGANIZATION;
+            }
+            LogDTO logDTO = new LogDTO(logProjectId, OperationLogConstants.SYSTEM, userRoleRelation.getId(), createUser, type, module, content + Translator.get("project_member") + ": " + userMap.get(userId));
+            setLog(logDTO, path, HttpMethodConstants.POST.name(), logDTOList);
+        }));
+        if (CollectionUtils.isNotEmpty(userRoleRelations)) {
+            userRoleRelationMapper.insertBatch(userRoleRelations);
+        }
+        operationLogService.batchAdd(logDTOList);
+    }
+
+    public int removeProjectMember(String projectId, String userId, String createUser, String module, String path) {
+        checkProjectNotExist(projectId);
+        SystemUser user = QueryChain.of(SystemUser.class).where(SYSTEM_USER.ID.eq(userId)).oneOpt()
+                .orElseThrow(() -> new FZFException(Translator.get("user_not_exist")));
+        QueryChain.of(UserRoleRelation.class).where(USER_ROLE_RELATION.SOURCE_ID.eq(projectId)
+                        .and(USER_ROLE_RELATION.ROLE_ID.eq(InternalUserRole.PROJECT_ADMIN.getValue()))).oneOpt()
+                .orElseThrow(() -> new FZFException(Translator.get("keep_at_least_one_administrator")));
+        if (projectId.equals(user.getLastProjectId())) {
+            user.setLastProjectId(StringUtils.EMPTY);
+            userMapper.update(user);
+        }
+        List<LogDTO> logDTOList = new ArrayList<>();
+        QueryChain<UserRoleRelation> userRoleRelationQueryChain = QueryChain.of(UserRoleRelation.class).where(USER_ROLE_RELATION.SOURCE_ID.eq(projectId)
+                .and(USER_ROLE_RELATION.USER_ID.eq(userId)));
+        userRoleRelationQueryChain.list().forEach(userRoleRelation -> {
+            String logProjectId = OperationLogConstants.SYSTEM;
+            if (OperationLogModule.SETTING_ORGANIZATION_PROJECT.equals(module)) {
+                logProjectId = OperationLogConstants.ORGANIZATION;
+            }
+            LogDTO logDTO = new LogDTO(logProjectId, OperationLogConstants.SYSTEM, userRoleRelation.getId(), createUser, OperationLogType.DELETE.name(), module, Translator.get("delete") + Translator.get("project_member") + ": " + user.getName());
+            setLog(logDTO, path, HttpMethodConstants.GET.name(), logDTOList);
+        });
+        operationLogService.batchAdd(logDTOList);
+        return userRoleRelationMapper.deleteByQuery(userRoleRelationQueryChain);
+    }
+
+    public void rename(UpdateProjectNameRequest request, String userId) {
+        checkProjectNotExist(request.id());
+        Project project = new Project();
+        project.setId(request.id());
+        project.setName(request.name());
+        project.setOrganizationId(request.organizationId());
+        checkProjectExistByName(project);
+        UpdateChain.of(Project.class).set(PROJECT.NAME, request.name()).set(PROJECT.UPDATE_USER, userId)
+                .where(PROJECT.ID.eq(request.id())).update();
     }
 }

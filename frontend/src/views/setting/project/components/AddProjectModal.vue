@@ -2,9 +2,10 @@
 import type {ICreateOrUpdateSystemProjectParams} from "/@/typings/project.ts";
 import type {FormInst} from "naive-ui";
 import {useForm} from "alova/client";
-import {projectApi} from "/src/api/modules/project-api.ts";
+import {projectApi} from "/@/api/modules/project-api.ts";
 import {toRefsUserStore, useAppStore} from "/@/stores";
 import {useI18n} from "vue-i18n";
+import {UserRequestTypeEnum} from "/@/components/user-selector/utils.ts";
 
 const showModal = defineModel("showModal", {type: Boolean, default: false});
 const props = defineProps<{
@@ -27,6 +28,7 @@ const rules = {
     {required: true, message: t('system.project.projectNumRequired')},
     {maxLength: 255, message: t('common.nameIsTooLang')},
   ],
+  userIds: [{required: true, message: t('system.project.projectAdminIsNotNull')}]
 }
 const {loading, form, reset, send} = useForm(formData => projectApi.createProject(formData), {
   initialForm: {
@@ -56,6 +58,19 @@ const handleSubmit = () => {
     }
   })
 }
+watchEffect(() => {
+  if (props.currentProject?.id) {
+    form.value = {
+      id: props.currentProject.id,
+      name: props.currentProject.name,
+      num: props.currentProject.num,
+      description: props.currentProject.description,
+      enable: props.currentProject.enable,
+      userIds: props.currentProject.userIds,
+      organizationId: appStore.appStore.currentOrgId
+    }
+  }
+})
 </script>
 
 <template>
@@ -74,7 +89,8 @@ const handleSubmit = () => {
           <n-input v-model:value="form.num" :placeholder="$t('system.project.projectNumPlaceholder')" clearable/>
         </n-form-item>
         <n-form-item :label="$t('system.project.projectAdmin')" path="userIds">
-          <n-select :placeholder="$t('system.project.pleaseSelectAdmin')"/>
+          <user-selector v-model:model-value="form.userIds"
+                         :type="UserRequestTypeEnum.SYSTEM_PROJECT_ADMIN"/>
         </n-form-item>
         <n-form-item :label="$t('common.desc')" path="description">
           <n-input v-model:value="form.description" type="textarea"

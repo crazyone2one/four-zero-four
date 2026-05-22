@@ -1,6 +1,5 @@
 package cn.master.util;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.apache.commons.lang3.StringUtils;
 import tools.jackson.core.type.TypeReference;
 import tools.jackson.databind.JavaType;
@@ -47,10 +46,11 @@ public class JsonUtils {
     public static <T> Function<Object, T> objectToType(TypeReference<T> targetType) {
         return object -> jsonMapper.convertValue(object, targetType);
     }
-    public static <K,V> Map<K,V> parseMap(String mapJsonStr, Class<K> kClazz, Class<V> vClazz) {
+
+    public static <K, V> Map<K, V> parseMap(String mapJsonStr, Class<K> kClazz, Class<V> vClazz) {
         if (StringUtils.isBlank(mapJsonStr) || kClazz == null || vClazz == null) {
             return Collections.emptyMap();
-        } 
+        }
         return jsonMapper.readValue(mapJsonStr, typeFactory.constructParametricType(Map.class, kClazz, vClazz));
     }
 }

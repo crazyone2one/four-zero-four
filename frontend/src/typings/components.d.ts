@@ -56,13 +56,17 @@ declare module 'vue' {
     NSelect: typeof import('naive-ui')['NSelect']
     NSpin: typeof import('naive-ui')['NSpin']
     NSwitch: typeof import('naive-ui')['NSwitch']
+    NTooltip: typeof import('naive-ui')['NTooltip']
     Pupil: typeof import('./../components/animated-characters/Pupil.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    ShowOrEdit: typeof import('./../components/ShowOrEdit.vue')['default']
     TableAction: typeof import('./../components/table/TableAction.vue')['default']
     TableActionBar: typeof import('./../components/table/TableActionBar.vue')['default']
     TableMoreAction: typeof import('./../components/table/TableMoreAction.vue')['default']
+    UserAdmin: typeof import('./../components/UserAdmin.vue')['default']
     UserAvatar: typeof import('./../components/UserAvatar.vue')['default']
     UserDropdown: typeof import('./../components/UserDropdown.vue')['default']
+    UserSelector: typeof import('./../components/user-selector/index.vue')['default']
   }
 }

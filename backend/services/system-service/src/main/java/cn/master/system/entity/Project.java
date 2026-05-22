@@ -1,5 +1,6 @@
 package cn.master.system.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.mybatisflex.annotation.Column;
 import com.mybatisflex.annotation.Id;
 import com.mybatisflex.annotation.Table;
@@ -67,6 +68,7 @@ public class Project implements Serializable {
      */
     @Column(onInsertValue = "now()")
     @Schema(description = "创建时间")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
 
     /**

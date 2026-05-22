@@ -1,4 +1,5 @@
 import type {IBatchApiParams} from "/@/typings/common";
+import type {SelectOption} from "naive-ui";
 
 export type RoleType = '' | '*' | 'admin' | 'user';
 export type SystemScopeType = 'PROJECT' | 'ORGANIZATION' | 'SYSTEM';
@@ -60,6 +61,8 @@ export interface ISimpleUserInfo {
     phone?: string;
 }
 
+export type IUserOption = ISimpleUserInfo & SelectOption
+
 export interface ICreateUserParams {
     userInfoList: ISimpleUserInfo[];
     userRoleIdList: string[];
@@ -75,4 +78,5 @@ export interface ISystemRole {
 export interface IUpdateUserStatusParams extends IBatchApiParams {
     enable: boolean;
 }
+
 export type IDeleteUserParams = IBatchApiParams;
