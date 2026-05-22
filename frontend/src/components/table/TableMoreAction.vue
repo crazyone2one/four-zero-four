@@ -10,6 +10,9 @@ const show = ref(false);
 const handleSelect = (key: string) => {
   emit('select', key)
 }
+const renderLabel = (option: DropdownOption) => {
+  return h('div', {class: option.key === 'delete' ? 'text-red hover:text-red-500' : ''}, {default: () => option.label})
+}
 watch(
     () => show.value,
     (val) => {
@@ -21,7 +24,9 @@ watch(
 </script>
 
 <template>
-  <n-dropdown v-model:show="show" :trigger="props.trigger || 'click'" :options="list" @select="handleSelect">
+  <n-dropdown v-model:show="show" :trigger="props.trigger || 'click'" :options="list"
+              :render-label="renderLabel"
+              @select="handleSelect">
     <n-button text @click="show = !show">
       <template #icon>
         <div class="i-mage:dots-horizontal-circle"/>
