@@ -30,6 +30,14 @@ public class QuartzManageService {
         scheduler.pauseJob(jobKey);
     }
 
+    public void pauseTrigger(TriggerKey triggerKey) throws Exception {
+        scheduler.pauseTrigger(triggerKey);
+    }
+
+    public void unscheduleJob(TriggerKey triggerKey) throws Exception {
+        scheduler.unscheduleJob(triggerKey);
+    }
+
     public void resumeJob(JobKey jobKey) throws Exception {
         scheduler.resumeJob(jobKey);
     }
@@ -94,4 +102,5 @@ public class QuartzManageService {
             scheduler.scheduleJob(jobDetailTrigger.getJobDetail(), jobDetailTrigger.getTrigger());
         }
     }
+
 }

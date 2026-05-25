@@ -9,6 +9,7 @@ import cn.master.quartz.config.FixedDelayJobListener;
 import cn.master.quartz.service.QuartzManageService;
 import cn.master.quartz.util.JobDetailTrigger;
 import jakarta.annotation.Resource;
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.quartz.*;
 import org.quartz.impl.matchers.GroupMatcher;
@@ -51,18 +52,18 @@ public class SchedulerStarter implements BeanPostProcessor, ApplicationContextAw
     private QuartzManageService quartzManageService;
 
     @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+    public void setApplicationContext(@NonNull ApplicationContext applicationContext) throws BeansException {
         now = Instant.now();
         this.applicationContext = (ConfigurableApplicationContext) applicationContext;
     }
 
     @Override
-    public @Nullable Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
+    public @Nullable Object postProcessBeforeInitialization(@NonNull Object bean, @NonNull String beanName) throws BeansException {
         return bean;
     }
 
     @Override
-    public @Nullable Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+    public @Nullable Object postProcessAfterInitialization(Object bean, @NonNull String beanName) throws BeansException {
         Method[] methods = ReflectionUtils.getAllDeclaredMethods(bean.getClass());
         for (Method method : methods) {
             QuartzScheduled annotation = AnnotationUtils.findAnnotation(method, QuartzScheduled.class);
@@ -117,7 +118,7 @@ public class SchedulerStarter implements BeanPostProcessor, ApplicationContextAw
     }
 
     @Override
-    public void run(ApplicationArguments args) {
+    public void run(@NonNull ApplicationArguments args) {
         try {
             if (!scheduler.isShutdown()) {
                 // Not using the Quartz startDelayed method since we explicitly want a daemon
@@ -144,7 +145,7 @@ public class SchedulerStarter implements BeanPostProcessor, ApplicationContextAw
                 schedulerThread.start();
             }
         } catch (SchedulerException e) {
-            e.printStackTrace();
+            throw new RuntimeException("定时任务启动异常: " + e.getMessage());
         }
     }
 

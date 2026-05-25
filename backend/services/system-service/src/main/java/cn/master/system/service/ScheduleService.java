@@ -1,0 +1,31 @@
+package cn.master.system.service;
+
+import cn.master.dto.BasePageRequest;
+import cn.master.system.dto.TableBatchProcessDTO;
+import cn.master.system.dto.taskhub.TaskHubScheduleDTO;
+import cn.master.system.entity.Schedule;
+import com.mybatisflex.core.paginate.Page;
+import com.mybatisflex.core.service.IService;
+import org.quartz.Job;
+import org.quartz.JobKey;
+import org.quartz.TriggerKey;
+
+import java.util.List;
+
+/**
+ * 定时任务 服务层。
+ *
+ * @author 11's papa
+ * @since 2026-05-22
+ */
+public interface ScheduleService extends IService<Schedule> {
+    Page<TaskHubScheduleDTO> getSchedulePage(BasePageRequest request, List<String> projectIds);
+
+    Schedule checkScheduleExit(String id);
+
+    void enable(String id, String userId, String path, String module);
+
+    void scheduleBatchOperation(TableBatchProcessDTO request, String userId, String projectId, String path, String module, boolean enable, List<String> projectIds);
+
+    void addOrUpdateCronJob(Schedule request, JobKey jobKey, TriggerKey triggerKey, Class<? extends Job> clazz);
+}
