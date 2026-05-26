@@ -1,20 +1,25 @@
 package cn.master.system.controller;
 
-import com.mybatisflex.core.paginate.Page;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.beans.factory.annotation.Autowired;
+import cn.master.constants.OperationLogType;
+import cn.master.security.util.SecurityUtils;
+import cn.master.system.dto.permission.PermissionDefinitionItem;
+import cn.master.system.dto.permission.PermissionSettingUpdateRequest;
+import cn.master.system.dto.permission.UserRoleUpdateRequest;
 import cn.master.system.entity.UserRole;
-import cn.master.system.service.UserRoleService;
-import org.springframework.web.bind.annotation.RestController;
-import io.swagger.v3.oas.annotations.tags.Tag;
+import cn.master.system.log.annotation.Log;
+import cn.master.system.log.service.GlobalUserRoleLogService;
+import cn.master.system.service.GlobalUserRoleService;
+import cn.master.validation.groups.Created;
+import cn.master.validation.groups.Updated;
+import com.mybatisflex.core.paginate.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 /**
@@ -25,46 +30,39 @@ import java.util.List;
  */
 @RestController
 @Tag(name = "用户组接口")
-@RequestMapping("/userRole")
+@RequestMapping("/user/role/global")
 public class UserRoleController {
 
-    @Autowired
-    private UserRoleService userRoleService;
+    private final GlobalUserRoleService globalUserRoleService;
 
-    /**
-     * 保存用户组。
-     *
-     * @param userRole 用户组
-     * @return {@code true} 保存成功，{@code false} 保存失败
-     */
+    public UserRoleController(@Qualifier("globalUserRoleService") GlobalUserRoleService globalUserRoleService) {
+        this.globalUserRoleService = globalUserRoleService;
+    }
+
     @PostMapping("save")
-    @Operation(description="保存用户组")
-    public boolean save(@RequestBody @Parameter(description="用户组")UserRole userRole) {
-        return userRoleService.save(userRole);
+    @Operation(description = "系统设置-系统-用户组-添加自定义全局用户组")
+    public UserRole save(@Validated({Created.class}) @RequestBody @Parameter(description = "用户组") UserRoleUpdateRequest request) {
+        UserRole userRole = new UserRole();
+        userRole.setCreateUser(SecurityUtils.getUserId());
+        BeanUtils.copyProperties(request, userRole);
+        return globalUserRoleService.add(userRole);
     }
 
-    /**
-     * 根据主键删除用户组。
-     *
-     * @param id 主键
-     * @return {@code true} 删除成功，{@code false} 删除失败
-     */
-    @DeleteMapping("remove/{id}")
-    @Operation(description="根据主键删除用户组")
-    public boolean remove(@PathVariable @Parameter(description="用户组主键") String id) {
-        return userRoleService.removeById(id);
+
+    @GetMapping("remove/{id}")
+    @Operation(description = "系统设置-系统-用户组-删除自定义全局用户组")
+    @Log(type = OperationLogType.DELETE, expression = "#clazz.deleteLog(#id)", clazz = GlobalUserRoleLogService.class)
+    public void remove(@PathVariable @Parameter(description = "用户组主键") String id) {
+        globalUserRoleService.delete(id, SecurityUtils.getUserId());
     }
 
-    /**
-     * 根据主键更新用户组。
-     *
-     * @param userRole 用户组
-     * @return {@code true} 更新成功，{@code false} 更新失败
-     */
-    @PutMapping("update")
-    @Operation(description="根据主键更新用户组")
-    public boolean update(@RequestBody @Parameter(description="用户组主键") UserRole userRole) {
-        return userRoleService.updateById(userRole);
+    @PostMapping("update")
+    @Operation(description = "系统设置-系统-用户组-更新自定义全局用户组")
+    @Log(type = OperationLogType.UPDATE, expression = "#clazz.updateLog(#request)", clazz = GlobalUserRoleLogService.class)
+    public UserRole update(@Validated({Updated.class}) @RequestBody UserRoleUpdateRequest request) {
+        UserRole userRole = new UserRole();
+        BeanUtils.copyProperties(request, userRole);
+        return globalUserRoleService.updateUserRole(userRole);
     }
 
     /**
@@ -73,9 +71,9 @@ public class UserRoleController {
      * @return 所有数据
      */
     @GetMapping("list")
-    @Operation(description="查询所有用户组")
+    @Operation(description = "系统设置-系统-用户组-获取全局用户组列表")
     public List<UserRole> list() {
-        return userRoleService.list();
+        return globalUserRoleService.list();
     }
 
     /**
@@ -85,9 +83,9 @@ public class UserRoleController {
      * @return 用户组详情
      */
     @GetMapping("getInfo/{id}")
-    @Operation(description="根据主键获取用户组")
-    public UserRole getInfo(@PathVariable @Parameter(description="用户组主键") String id) {
-        return userRoleService.getById(id);
+    @Operation(description = "根据主键获取用户组")
+    public UserRole getInfo(@PathVariable @Parameter(description = "用户组主键") String id) {
+        return globalUserRoleService.getById(id);
     }
 
     /**
@@ -97,9 +95,21 @@ public class UserRoleController {
      * @return 分页对象
      */
     @GetMapping("page")
-    @Operation(description="分页查询用户组")
-    public Page<UserRole> page(@Parameter(description="分页信息") Page<UserRole> page) {
-        return userRoleService.page(page);
+    @Operation(description = "分页查询用户组")
+    public Page<UserRole> page(@Parameter(description = "分页信息") Page<UserRole> page) {
+        return globalUserRoleService.page(page);
     }
 
+    @GetMapping("/permission/setting/{id}")
+    @Operation(summary = "系统设置-系统-用户组-获取全局用户组对应的权限配置")
+    public List<PermissionDefinitionItem> getPermissionSetting(@PathVariable String id) {
+        return globalUserRoleService.getPermissionSetting(id);
+    }
+
+    @PostMapping("/permission/update")
+    @Operation(summary = "系统设置-系统-用户组-编辑全局用户组对应的权限配置")
+    @Log(type = OperationLogType.UPDATE, expression = "#clazz.updateLog(#request)", clazz = GlobalUserRoleLogService.class)
+    public void updatePermissionSetting(@Validated @RequestBody PermissionSettingUpdateRequest request) {
+        globalUserRoleService.updatePermissionSetting(request);
+    }
 }

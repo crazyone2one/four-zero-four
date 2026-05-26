@@ -14,6 +14,8 @@ malo:
     ignore-paths:
       - /login
       - /refresh-token
+quartz:
+  enabled: true
 springdoc:
   api-docs:
     enabled: false

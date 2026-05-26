@@ -41,7 +41,7 @@ import static cn.master.system.entity.table.UserRoleRelationTableDef.USER_ROLE_R
 @Service
 @RequiredArgsConstructor
 public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemUser> implements SystemUserService {
-    private final UserRoleService userRoleService;
+    private final BaseUserRoleService baseUserRoleService;
     private final PasswordEncoder passwordEncoder;
     private final UserRoleRelationService userRoleRelationService;
     private final OperationLogService operationLogService;
@@ -51,7 +51,7 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
     @Override
     @Transactional(rollbackFor = Exception.class)
     public UserBatchCreateResponse addUser(UserBatchCreateRequest userCreateDTO, String operator) {
-        userRoleService.checkRoleIsGlobalAndHaveMember(userCreateDTO.userRoleIdList(), true);
+        baseUserRoleService.checkRoleIsGlobalAndHaveMember(userCreateDTO.userRoleIdList(), true);
         UserBatchCreateResponse response = new UserBatchCreateResponse();
         Map<String, String> errorEmails = validateUserInfo(userCreateDTO.userInfoList().stream().map(UserCreateInfo::getEmail).toList());
         if (MapUtils.isNotEmpty(errorEmails)) {
@@ -106,7 +106,7 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
 
     @Override
     public UserEditRequest updateUser(UserEditRequest request, String operatorId) {
-        userRoleService.checkRoleIsGlobalAndHaveMember(request.getUserRoleIdList(), true);
+        baseUserRoleService.checkRoleIsGlobalAndHaveMember(request.getUserRoleIdList(), true);
         checkUserEmail(request.getId(), request.getEmail());
         SystemUser user = new SystemUser();
         BeanUtils.copyProperties(request, user);
@@ -148,7 +148,7 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
         if (userDTO != null) {
             userDTO.setUserRoleRelations(QueryChain.of(UserRoleRelation.class).where(USER_ROLE_RELATION.USER_ID.eq(userDTO.getId())).list());
             userDTO.setUserRoles(
-                    userRoleService.selectByUserRoleRelations(userDTO.getUserRoleRelations())
+                    baseUserRoleService.selectByUserRoleRelations(userDTO.getUserRoleRelations())
             );
         }
         return userDTO;

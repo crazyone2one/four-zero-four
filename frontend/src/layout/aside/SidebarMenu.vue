@@ -30,6 +30,11 @@ const menuOptions: MenuOption[] = [
         label: () => h(RouterLink, {to: {name: 'User'}}, {default: () => t('menu.settings.system.user')}),
         key: 'User',
         icon: () => h('div', {class: 'i-mage:users'})
+      },
+      {
+        label: () => h(RouterLink, {to: {name: 'UserGroup'}}, {default: () => t('menu.settings.system.usergroup')}),
+        key: 'User',
+        icon: () => h('div', {class: 'i-mage:user-check'})
       }
     ]
   }

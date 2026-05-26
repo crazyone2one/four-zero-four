@@ -20,6 +20,11 @@ const routes: RouteRecordRaw[] = [
                 path: '/setting', name: 'Setting', children: [
                     {path: 'project', name: 'Project', component: () => import('/@/views/setting/project/index.vue')},
                     {path: 'user', name: 'User', component: () => import('/@/views/setting/user/index.vue')},
+                    {
+                        path: 'user-group',
+                        name: 'UserGroup',
+                        component: () => import('/@/views/setting/user-group/index.vue')
+                    },
                 ]
             },
         ],

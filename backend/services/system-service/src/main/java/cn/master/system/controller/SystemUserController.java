@@ -10,15 +10,15 @@ import cn.master.system.dto.user.*;
 import cn.master.system.entity.SystemUser;
 import cn.master.system.log.annotation.Log;
 import cn.master.system.log.service.UserLogService;
+import cn.master.system.service.BaseUserRoleService;
 import cn.master.system.service.SystemUserService;
-import cn.master.system.service.UserRoleService;
 import cn.master.validation.groups.Created;
 import cn.master.validation.groups.Updated;
 import com.mybatisflex.core.paginate.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,11 +33,16 @@ import java.util.List;
 @RestController
 @Tag(name = "用户接口")
 @RequestMapping("/system/user")
-@RequiredArgsConstructor
 public class SystemUserController {
 
     private final SystemUserService systemUserService;
-    private final UserRoleService userRoleService;
+    private final BaseUserRoleService baseUserRoleService;
+
+    public SystemUserController(SystemUserService systemUserService,
+                                @Qualifier("baseUserRoleService") BaseUserRoleService baseUserRoleService) {
+        this.systemUserService = systemUserService;
+        this.baseUserRoleService = baseUserRoleService;
+    }
 
     @PostMapping("save")
     @Operation(summary = "系统设置-系统-用户-添加用户")
@@ -98,6 +103,6 @@ public class SystemUserController {
     @GetMapping("/get/global/system/role")
     @Operation(summary = "系统设置-系统-用户-查找系统级用户组")
     public List<UserSelectOption> getGlobalSystemRole() {
-        return userRoleService.getGlobalSystemRoleList();
+        return baseUserRoleService.getGlobalSystemRoleList();
     }
 }

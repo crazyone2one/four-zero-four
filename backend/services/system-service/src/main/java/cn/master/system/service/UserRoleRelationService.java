@@ -7,6 +7,7 @@ import com.mybatisflex.core.service.IService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -26,4 +27,10 @@ public interface UserRoleRelationService extends IService<UserRoleRelation> {
     Map<String, UserTableVO> selectGlobalUserRoleAndOrganization(List<String> userIdList);
 
     List<UserRoleRelation> selectByUserId(String userId);
+
+    void deleteByRoleId(String roleId);
+
+    List<String> getUserIdByRoleId(String roleId);
+
+    List<UserRoleRelation> getUserIdAndSourceIdByUserIds(List<String> userIds);
 }

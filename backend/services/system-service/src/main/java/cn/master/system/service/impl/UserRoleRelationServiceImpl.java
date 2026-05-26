@@ -1,9 +1,6 @@
 package cn.master.system.service.impl;
 
-import cn.master.constants.OperationLogConstants;
-import cn.master.constants.OperationLogType;
-import cn.master.constants.UserRoleEnum;
-import cn.master.constants.UserRoleScope;
+import cn.master.constants.*;
 import cn.master.exception.FZFException;
 import cn.master.result.SystemResultCode;
 import cn.master.system.dto.user.UserTableVO;
@@ -32,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static cn.master.result.SystemResultCode.USER_ROLE_RELATION_REMOVE_ADMIN_USER_PERMISSION;
 import static cn.master.system.entity.table.UserRoleRelationTableDef.USER_ROLE_RELATION;
 import static cn.master.system.entity.table.UserRoleTableDef.USER_ROLE;
 
@@ -149,6 +147,34 @@ public class UserRoleRelationServiceImpl extends ServiceImpl<UserRoleRelationMap
     @Override
     public List<UserRoleRelation> selectByUserId(String userId) {
         return queryChain().where(USER_ROLE_RELATION.USER_ID.eq(userId)).list();
+    }
+
+    @Override
+    public void deleteByRoleId(String roleId) {
+        QueryChain<UserRoleRelation> chain = queryChain().where(USER_ROLE_RELATION.ROLE_ID.eq(roleId));
+        List<UserRoleRelation> userRoleRelations = chain.list();
+        userRoleRelations.forEach(userRoleRelation ->
+                checkAdminPermissionRemove(userRoleRelation.getUserId(), userRoleRelation.getRoleId()));
+        mapper.deleteByQuery(chain);
+    }
+
+    @Override
+    public List<String> getUserIdByRoleId(String roleId) {
+        return queryChain().select(USER_ROLE_RELATION.USER_ID).where(USER_ROLE_RELATION.ROLE_ID.eq(roleId)).listAs(String.class);
+    }
+
+    @Override
+    public List<UserRoleRelation> getUserIdAndSourceIdByUserIds(List<String> userIds) {
+        if (CollectionUtils.isEmpty(userIds)) {
+            return List.of();
+        }
+        return queryChain().where(USER_ROLE_RELATION.USER_ID.in(userIds)).list();
+    }
+
+    private void checkAdminPermissionRemove(String userId, String roleId) {
+        if (InternalUserRole.ADMIN.getValue().equals(roleId) && Strings.CS.equals(userId, InternalUserRole.ADMIN.getValue())) {
+            throw new FZFException(USER_ROLE_RELATION_REMOVE_ADMIN_USER_PERMISSION);
+        }
     }
 
     private List<UserRoleRelation> selectGlobalRoleByUserId(String userId) {

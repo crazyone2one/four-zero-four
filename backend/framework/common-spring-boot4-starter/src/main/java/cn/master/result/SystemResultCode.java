@@ -11,7 +11,12 @@ public enum SystemResultCode implements IResultCode {
     DEPT_USER_TOO_MANY(101512, "Department user too many"),
     INVITE_EMAIL_EXIST(101513, "user_email_already_exists"),
     USER_ROLE_RELATION_EXIST(100002, "user_role_relation_exist_error"),
-    ;
+    NO_GLOBAL_USER_ROLE_PERMISSION(101013, "no_global_user_role_permission_error"),
+    GLOBAL_USER_ROLE_PERMISSION(101001, "global_user_role_permission_error"),
+    GLOBAL_USER_ROLE_EXIST(101002, "global_user_role_exist_error"),
+    INTERNAL_USER_ROLE_PERMISSION(100003, "internal_user_role_permission_error"),
+    USER_ROLE_RELATION_REMOVE_ADMIN_USER_PERMISSION(100004, "user_role_relation_remove_admin_user_permission_error"),
+    ADMIN_USER_ROLE_PERMISSION(100019, "internal_admin_user_role_permission_error");
     private final int code;
     private final String message;
 
