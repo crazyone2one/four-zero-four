@@ -1,5 +1,6 @@
 package cn.master.system.config;
 
+import cn.master.quartz.service.QuartzManageService;
 import cn.master.system.handler.ScheduleManager;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
@@ -17,5 +18,11 @@ public class ScheduleConfig {
     @ConditionalOnProperty(prefix = "quartz", value = "enabled", havingValue = "true")
     public ScheduleManager scheduleManager() {
         return new ScheduleManager();
+    }
+
+    @Bean
+    @ConditionalOnProperty(prefix = "quartz", value = "enabled", havingValue = "true")
+    public QuartzManageService quartzManageService() {
+        return new QuartzManageService();
     }
 }

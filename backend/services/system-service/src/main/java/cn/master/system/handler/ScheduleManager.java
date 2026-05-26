@@ -15,18 +15,6 @@ public class ScheduleManager {
     @Resource
     private QuartzManageService quartzManageService;
 
-    public void addSimpleJob(JobKey jobKey, TriggerKey triggerKey, Class<? extends Job> cls, int repeatIntervalTime, JobDataMap jobDataMap)
-            throws Exception {
-        JobBuilder jobBuilder = JobBuilder.newJob(cls).withIdentity(jobKey);
-        if (jobDataMap != null) {
-            jobBuilder.usingJobData(jobDataMap);
-        }
-        SimpleTrigger trigger = TriggerBuilder.newTrigger().withIdentity(triggerKey)
-                .withSchedule(SimpleScheduleBuilder.simpleSchedule().withIntervalInHours(repeatIntervalTime).repeatForever())
-                .startNow().build();
-        quartzManageService.addJob(jobBuilder.build(), trigger);
-    }
-
     public void addCronJob(JobKey jobKey, TriggerKey triggerKey, Class<? extends Job> jobClass, String cron, JobDataMap jobDataMap) {
         try {
             LogUtils.info("addCronJob: " + triggerKey.getName() + "," + triggerKey.getGroup());
