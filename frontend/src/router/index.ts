@@ -19,11 +19,20 @@ const routes: RouteRecordRaw[] = [
             {
                 path: '/setting', name: 'Setting', children: [
                     {path: 'project', name: 'Project', component: () => import('/@/views/setting/project/index.vue')},
-                    {path: 'user', name: 'User', component: () => import('/@/views/setting/user/index.vue')},
+                    {
+                        path: 'user',
+                        name: 'settingSystemUser',
+                        component: () => import('/@/views/setting/user/index.vue')
+                    },
                     {
                         path: 'user-group',
-                        name: 'UserGroup',
+                        name: 'settingSystemUserGroup',
                         component: () => import('/@/views/setting/user-group/index.vue')
+                    },
+                    {
+                        path: 'task-center',
+                        name: 'settingSystemTaskCenter',
+                        component: () => import('/@/views/setting/task-center/index.vue')
                     },
                 ]
             },

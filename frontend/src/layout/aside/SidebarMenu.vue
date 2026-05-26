@@ -27,14 +27,20 @@ const menuOptions: MenuOption[] = [
         icon: () => h('div', {class: 'i-mage:dashboard-chart'})
       },
       {
-        label: () => h(RouterLink, {to: {name: 'User'}}, {default: () => t('menu.settings.system.user')}),
-        key: 'User',
+        label: () => h(RouterLink, {to: {name: 'settingSystemUser'}}, {default: () => t('menu.settings.system.user')}),
+        key: 'settingSystemUser',
         icon: () => h('div', {class: 'i-mage:users'})
       },
       {
-        label: () => h(RouterLink, {to: {name: 'UserGroup'}}, {default: () => t('menu.settings.system.usergroup')}),
-        key: 'User',
+        label: () => h(RouterLink, {to: {name: 'settingSystemUserGroup'}}, {default: () => t('menu.settings.system.usergroup')}),
+        key: 'settingSystemUserGroup',
         icon: () => h('div', {class: 'i-mage:user-check'})
+      }
+      ,
+      {
+        label: () => h(RouterLink, {to: {name: 'settingSystemTaskCenter'}}, {default: () => t('menu.projectManagement.taskCenter')}),
+        key: 'settingSystemTaskCenter',
+        icon: () => h('div', {class: 'i-mage:checklist-note'})
       }
     ]
   }

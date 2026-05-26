@@ -1,6 +1,7 @@
 package cn.master.system.service;
 
 import cn.master.dto.BasePageRequest;
+import cn.master.system.dto.ScheduleConfig;
 import cn.master.system.dto.TableBatchProcessDTO;
 import cn.master.system.dto.taskhub.TaskHubScheduleDTO;
 import cn.master.system.entity.Schedule;
@@ -19,6 +20,10 @@ import java.util.List;
  * @since 2026-05-22
  */
 public interface ScheduleService extends IService<Schedule> {
+    void addSchedule(Schedule schedule);
+
+    void editSchedule(Schedule schedule);
+
     Page<TaskHubScheduleDTO> getSchedulePage(BasePageRequest request, List<String> projectIds);
 
     Schedule checkScheduleExit(String id);
@@ -28,4 +33,6 @@ public interface ScheduleService extends IService<Schedule> {
     void scheduleBatchOperation(TableBatchProcessDTO request, String userId, String projectId, String path, String module, boolean enable, List<String> projectIds);
 
     void addOrUpdateCronJob(Schedule request, JobKey jobKey, TriggerKey triggerKey, Class<? extends Job> clazz);
+
+    String scheduleConfig(ScheduleConfig scheduleConfig, JobKey jobKey, TriggerKey triggerKey, Class<? extends Job> clazz, String operator);
 }

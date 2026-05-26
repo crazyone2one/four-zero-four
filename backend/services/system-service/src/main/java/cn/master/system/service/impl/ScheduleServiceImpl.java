@@ -1,9 +1,11 @@
 package cn.master.system.service.impl;
 
+import cn.master.constants.ApplicationNumScope;
 import cn.master.constants.HttpMethodConstants;
 import cn.master.constants.OperationLogType;
 import cn.master.dto.BasePageRequest;
 import cn.master.exception.FZFException;
+import cn.master.system.dto.ScheduleConfig;
 import cn.master.system.dto.TableBatchProcessDTO;
 import cn.master.system.dto.project.ProjectDTO;
 import cn.master.system.dto.taskhub.TaskHubScheduleDTO;
@@ -15,18 +17,17 @@ import cn.master.system.log.dto.LogDTOBuilder;
 import cn.master.system.mapper.ScheduleMapper;
 import cn.master.system.service.OperationLogService;
 import cn.master.system.service.ScheduleService;
+import cn.master.uid.NumGenerator;
 import cn.master.util.LogUtils;
 import cn.master.util.Translator;
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryChain;
 import com.mybatisflex.spring.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.quartz.Job;
-import org.quartz.JobKey;
-import org.quartz.SchedulerException;
-import org.quartz.TriggerKey;
+import org.quartz.*;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -49,6 +50,21 @@ import static cn.master.system.entity.table.ScheduleTableDef.SCHEDULE;
 public class ScheduleServiceImpl extends ServiceImpl<ScheduleMapper, Schedule> implements ScheduleService {
     private final OperationLogService operationLogService;
     private final ScheduleManager scheduleManager;
+
+    @Override
+    public void addSchedule(Schedule schedule) {
+        schedule.setNum(getNextNum(schedule.getProjectId()));
+        mapper.insertSelective(schedule);
+    }
+
+    @Override
+    public void editSchedule(Schedule schedule) {
+        mapper.update(schedule);
+    }
+
+    public long getNextNum(String projectId) {
+        return NumGenerator.nextNum(projectId, ApplicationNumScope.TASK);
+    }
 
     @Override
     public Page<TaskHubScheduleDTO> getSchedulePage(BasePageRequest request, List<String> projectIds) {
@@ -145,6 +161,30 @@ public class ScheduleServiceImpl extends ServiceImpl<ScheduleMapper, Schedule> i
                 throw new FZFException("定时任务关闭异常: " + e.getMessage());
             }
         }
+    }
+
+    @Override
+    public String scheduleConfig(ScheduleConfig scheduleConfig, JobKey jobKey, TriggerKey triggerKey, Class<? extends Job> clazz, String operator) {
+        Schedule schedule;
+        List<Schedule> scheduleList = queryChain().where(SCHEDULE.RESOURCE_ID.eq(scheduleConfig.getResourceId())
+                .and(SCHEDULE.JOB.eq(clazz.getName()))).list();
+        if (CollectionUtils.isNotEmpty(scheduleList)) {
+            schedule = scheduleConfig.genCronSchedule(scheduleList.getFirst());
+            schedule.setJob(clazz.getName());
+            mapper.update(schedule);
+        } else {
+            schedule = scheduleConfig.genCronSchedule(null);
+            schedule.setJob(clazz.getName());
+            schedule.setCreateUser(operator);
+            schedule.setNum(getNextNum(scheduleConfig.getProjectId()));
+            mapper.insert(schedule);
+        }
+        JobDataMap jobDataMap = scheduleManager.getDefaultJobDataMap(schedule, scheduleConfig.getCron(), schedule.getCreateUser());
+        scheduleManager.removeJob(jobKey, triggerKey);
+        if (BooleanUtils.isTrue(schedule.getEnable())) {
+            scheduleManager.addCronJob(jobKey, triggerKey, clazz, scheduleConfig.getCron(), jobDataMap);
+        }
+        return schedule.getId();
     }
 
     private void processTaskCenterSchedule(Page<TaskHubScheduleDTO> page, List<String> projectIds) {
