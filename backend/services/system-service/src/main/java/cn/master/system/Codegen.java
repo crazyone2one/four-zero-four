@@ -59,7 +59,7 @@ public class Codegen {
         dataSource.setPassword("123456");
 
         //创建配置内容，两种风格都可以。
-        GlobalConfig globalConfig = createGlobalConfigUseStyle1(new String[]{"schedule"});
+        GlobalConfig globalConfig = createGlobalConfigUseStyle1(new String[]{"custom_field","custom_field_option"});
         //GlobalConfig globalConfig = createGlobalConfigUseStyle2();
 
         //通过 datasource 和 globalConfig 创建代码生成器

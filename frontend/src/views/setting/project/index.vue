@@ -70,7 +70,6 @@ const columns: DataTableColumns<IProjectPageItem> = [
   },
 ]
 const showUserDrawer = (record: IProjectPageItem) => {
-  console.log(record)
   currentUserDrawer.visible = true;
   currentUserDrawer.projectId = record.id;
   currentUserDrawer.currentName = record.name;

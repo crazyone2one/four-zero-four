@@ -16,6 +16,10 @@ public enum SystemResultCode implements IResultCode {
     GLOBAL_USER_ROLE_EXIST(101002, "global_user_role_exist_error"),
     INTERNAL_USER_ROLE_PERMISSION(100003, "internal_user_role_permission_error"),
     USER_ROLE_RELATION_REMOVE_ADMIN_USER_PERMISSION(100004, "user_role_relation_remove_admin_user_permission_error"),
+    PROJECT_TEMPLATE_PERMISSION(102002, "project_template_permission_error"),
+    CUSTOM_FIELD_EXIST(100012, "custom_field.exist"),
+    INTERNAL_CUSTOM_FIELD_PERMISSION(100008, "internal_custom_field_permission_error"),
+    TEMPLATE_SCENE_ILLEGAL(100010, "template_scene_illegal_error"),
     ADMIN_USER_ROLE_PERMISSION(100019, "internal_admin_user_role_permission_error");
     private final int code;
     private final String message;

@@ -20,6 +20,7 @@ import cn.master.system.mapper.SystemUserMapper;
 import cn.master.system.service.CommonProjectService;
 import cn.master.system.service.ProjectService;
 import cn.master.system.service.SimpleUserService;
+import cn.master.util.ServiceUtils;
 import cn.master.util.Translator;
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryChain;
@@ -190,6 +191,11 @@ public class ProjectServiceImpl extends ServiceImpl<ProjectMapper, Project> impl
     @Override
     public void rename(UpdateProjectNameRequest request, String userId) {
         commonProjectService.rename(request, userId);
+    }
+
+    @Override
+    public Project checkResourceExist(String id) {
+        return ServiceUtils.checkResourceExist(mapper.selectOneById(id), "permission.project.name");
     }
 
     private List<UserRoleOptionDto> selectProjectUserRoleByUserIds(List<String> userIds, String projectId) {

@@ -35,12 +35,16 @@ const menuOptions: MenuOption[] = [
         label: () => h(RouterLink, {to: {name: 'settingSystemUserGroup'}}, {default: () => t('menu.settings.system.usergroup')}),
         key: 'settingSystemUserGroup',
         icon: () => h('div', {class: 'i-mage:user-check'})
-      }
-      ,
+      },
       {
         label: () => h(RouterLink, {to: {name: 'settingSystemTaskCenter'}}, {default: () => t('menu.projectManagement.taskCenter')}),
         key: 'settingSystemTaskCenter',
         icon: () => h('div', {class: 'i-mage:checklist-note'})
+      },
+      {
+        label: () => h(RouterLink, {to: {name: 'settingCustomField'}}, {default: () => t('menu.settings.organization.templateFieldSetting')}),
+        key: 'settingCustomField',
+        icon: () => h('div', {class: 'i-mage:file-2'})
       }
     ]
   }

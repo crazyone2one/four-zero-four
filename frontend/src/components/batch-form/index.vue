@@ -137,6 +137,10 @@ defineExpose({
             <n-input v-if="model.type === 'input'" v-model:value="element[model.field]"
                      class="flex-1" :placeholder="$t(model.placeholder || '')"
                      clearable @change="emit('change')"/>
+            <n-select v-else-if="model.type === 'select'"
+                      v-model:value="element[model.field]"
+                      :options="model.options"
+                      class="flex-1" :placeholder="$t(model.placeholder || '')"/>
           </n-form-item>
           <div v-if="showEnable">
             <n-switch class="mt-[8px]" :style="{ 'margin-top': index === 0 && !props.isShowDrag ? '36px' : '' }"/>

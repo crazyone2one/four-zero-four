@@ -10,8 +10,12 @@ import cn.master.system.dto.request.ProjectSwitchRequest;
 import cn.master.system.dto.user.UserDTO;
 import cn.master.system.dto.user.UserExtendDTO;
 import cn.master.system.entity.Project;
+import cn.master.validation.groups.Created;
+import cn.master.validation.groups.Updated;
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.service.IService;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 import java.util.List;
 
@@ -46,4 +50,6 @@ public interface ProjectService extends IService<Project> {
     int removeProjectMember(String projectId, String userId, String createUser);
 
     void rename(UpdateProjectNameRequest request, String userId);
+
+    Project checkResourceExist(String id);
 }

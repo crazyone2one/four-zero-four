@@ -68,7 +68,7 @@ export interface ICreateUserParams {
     userRoleIdList: string[];
 }
 
-export interface ISystemRole {
+export interface ISystemRole extends SelectOption {
     id: string;
     name: string;
     selected: boolean; // 是否可选

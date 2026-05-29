@@ -34,6 +34,11 @@ const routes: RouteRecordRaw[] = [
                         name: 'settingSystemTaskCenter',
                         component: () => import('/@/views/setting/task-center/index.vue')
                     },
+                    {
+                        path: 'custom-field',
+                        name: 'settingCustomField',
+                        component: () => import('/@/views/setting/custom-field/index.vue')
+                    },
                 ]
             },
         ],

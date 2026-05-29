@@ -11,6 +11,7 @@ import lombok.Data;
 public class BaseCondition {
     @Schema(description = "关键字")
     private String keyword;
+    @Schema(description = "项目ID")
     private String projectId;
     private String sensorType;
     private String sensorGroup;

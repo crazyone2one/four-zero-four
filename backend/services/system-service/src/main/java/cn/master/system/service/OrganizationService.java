@@ -1,7 +1,7 @@
 package cn.master.system.service;
 
-import com.mybatisflex.core.service.IService;
 import cn.master.system.entity.Organization;
+import com.mybatisflex.core.service.IService;
 
 /**
  * 组织 服务层。
@@ -11,4 +11,5 @@ import cn.master.system.entity.Organization;
  */
 public interface OrganizationService extends IService<Organization> {
 
+    Organization checkResourceExist(String id);
 }
