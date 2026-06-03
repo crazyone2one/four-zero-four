@@ -64,48 +64,48 @@ public class SchedulerStarter implements BeanPostProcessor, ApplicationContextAw
 
     @Override
     public @Nullable Object postProcessAfterInitialization(Object bean, @NonNull String beanName) throws BeansException {
-        Method[] methods = ReflectionUtils.getAllDeclaredMethods(bean.getClass());
-        for (Method method : methods) {
-            QuartzScheduled annotation = AnnotationUtils.findAnnotation(method, QuartzScheduled.class);
-            if (annotation != null) {
-                JobDataMap jobDataMap = new JobDataMap();
-                jobDataMap.put("targetObject", beanName);
-                jobDataMap.put("targetMethod", method.getName());
-                String cron = annotation.cron();
-                long fixedDelay = annotation.fixedDelay();
-                long fixedRate = annotation.fixedRate();
-                int initialDelay = (int) annotation.initialDelay();
-                final JobDetail jobDetail;
-                final Trigger trigger;
-                String jobDetailIdentity = beanName + "." + method.getName();
-                if (cron != null && !cron.isEmpty()) {
-                    cron = getCronExpression(cron);
-                    jobDetail = JobBuilder.newJob(ClusterQuartzJobBean.class)
-                            .storeDurably(true).usingJobData(jobDataMap).build();
-                    trigger = TriggerBuilder.newTrigger().withIdentity(TriggerKey.triggerKey(jobDetailIdentity, quartzProperties.getGroupName()))
-                            .startAt(new Date(now.plusMillis(initialDelay).toEpochMilli()))
-                            .withSchedule(CronScheduleBuilder.cronSchedule(cron).inTimeZone(quartzTimeZone))
-                            .build();
-                } else if (fixedDelay > 0) {
-                    jobDataMap.put(FixedDelayJobListener.FIXED_DELAY_JOB_DATA, new FixedDelayJobData(fixedDelay));
-                    jobDetail = JobBuilder.newJob(ClusterQuartzFixedDelayJobBean.class)
-                            .storeDurably(true).usingJobData(jobDataMap).build();
-                    trigger = TriggerBuilder.newTrigger().withIdentity(TriggerKey.triggerKey(jobDetailIdentity, quartzProperties.getGroupName()))
-                            .startAt(new Date(now.plusMillis(initialDelay).toEpochMilli()))
-                            .withSchedule(SimpleScheduleBuilder.simpleSchedule().withIntervalInMilliseconds(fixedDelay).repeatForever())
-                            .build();
-                } else {
-                    jobDetail = JobBuilder.newJob(ClusterQuartzJobBean.class)
-                            .storeDurably(true).usingJobData(jobDataMap).build();
-                    trigger = TriggerBuilder.newTrigger().withIdentity(TriggerKey.triggerKey(jobDetailIdentity, quartzProperties.getGroupName()))
-                            .startAt(new Date(now.plusMillis(initialDelay).toEpochMilli()))
-                            .withSchedule(SimpleScheduleBuilder.simpleSchedule()
-                                    .withIntervalInMilliseconds(fixedRate).repeatForever())
-                            .build();
-                }
-                jobDetailTriggerMap.put(jobDetailIdentity, new JobDetailTrigger(jobDetail, trigger));
-            }
-        }
+        // Method[] methods = ReflectionUtils.getAllDeclaredMethods(bean.getClass());
+        // for (Method method : methods) {
+        //     QuartzScheduled annotation = AnnotationUtils.findAnnotation(method, QuartzScheduled.class);
+        //     if (annotation != null) {
+        //         JobDataMap jobDataMap = new JobDataMap();
+        //         jobDataMap.put("targetObject", beanName);
+        //         jobDataMap.put("targetMethod", method.getName());
+        //         String cron = annotation.cron();
+        //         long fixedDelay = annotation.fixedDelay();
+        //         long fixedRate = annotation.fixedRate();
+        //         int initialDelay = (int) annotation.initialDelay();
+        //         final JobDetail jobDetail;
+        //         final Trigger trigger;
+        //         String jobDetailIdentity = beanName + "." + method.getName();
+        //         if (cron != null && !cron.isEmpty()) {
+        //             cron = getCronExpression(cron);
+        //             jobDetail = JobBuilder.newJob(ClusterQuartzJobBean.class)
+        //                     .storeDurably(true).usingJobData(jobDataMap).build();
+        //             trigger = TriggerBuilder.newTrigger().withIdentity(TriggerKey.triggerKey(jobDetailIdentity, quartzProperties.getGroupName()))
+        //                     .startAt(new Date(now.plusMillis(initialDelay).toEpochMilli()))
+        //                     .withSchedule(CronScheduleBuilder.cronSchedule(cron).inTimeZone(quartzTimeZone))
+        //                     .build();
+        //         } else if (fixedDelay > 0) {
+        //             jobDataMap.put(FixedDelayJobListener.FIXED_DELAY_JOB_DATA, new FixedDelayJobData(fixedDelay));
+        //             jobDetail = JobBuilder.newJob(ClusterQuartzFixedDelayJobBean.class)
+        //                     .storeDurably(true).usingJobData(jobDataMap).build();
+        //             trigger = TriggerBuilder.newTrigger().withIdentity(TriggerKey.triggerKey(jobDetailIdentity, quartzProperties.getGroupName()))
+        //                     .startAt(new Date(now.plusMillis(initialDelay).toEpochMilli()))
+        //                     .withSchedule(SimpleScheduleBuilder.simpleSchedule().withIntervalInMilliseconds(fixedDelay).repeatForever())
+        //                     .build();
+        //         } else {
+        //             jobDetail = JobBuilder.newJob(ClusterQuartzJobBean.class)
+        //                     .storeDurably(true).usingJobData(jobDataMap).build();
+        //             trigger = TriggerBuilder.newTrigger().withIdentity(TriggerKey.triggerKey(jobDetailIdentity, quartzProperties.getGroupName()))
+        //                     .startAt(new Date(now.plusMillis(initialDelay).toEpochMilli()))
+        //                     .withSchedule(SimpleScheduleBuilder.simpleSchedule()
+        //                             .withIntervalInMilliseconds(fixedRate).repeatForever())
+        //                     .build();
+        //         }
+        //         jobDetailTriggerMap.put(jobDetailIdentity, new JobDetailTrigger(jobDetail, trigger));
+        //     }
+        // }
         return bean;
     }
 
@@ -119,34 +119,34 @@ public class SchedulerStarter implements BeanPostProcessor, ApplicationContextAw
 
     @Override
     public void run(@NonNull ApplicationArguments args) {
-        try {
-            if (!scheduler.isShutdown()) {
-                // Not using the Quartz startDelayed method since we explicitly want a daemon
-                // thread here, not keeping the JVM alive in case of all other threads ending.
-                Thread schedulerThread = new Thread(() -> {
-                    try {
-                        QuartzProperties quartzProperties = this.applicationContext.getBean(QuartzProperties.class);
-                        TimeUnit.SECONDS.sleep(quartzProperties.getStartupDelay().getSeconds());
-                    } catch (InterruptedException ex) {
-                        Thread.currentThread().interrupt();
-                        // simply proceed
-                    }
-                    try {
-                        // init all jobs
-                        logger.info("reschedule all jobs...");
-                        quartzManageService.rescheduleJobs(getJobKeys(), getTriggerKeys(), jobDetailTriggerMap);
-                        scheduler.start();
-                    } catch (Exception ex) {
-                        throw new SchedulingException("Could not start Quartz Scheduler after delay", ex);
-                    }
-                });
-                schedulerThread.setName("Quartz Scheduler [" + scheduler.getSchedulerName() + "]");
-                schedulerThread.setDaemon(true);
-                schedulerThread.start();
-            }
-        } catch (SchedulerException e) {
-            throw new RuntimeException("定时任务启动异常: " + e.getMessage());
-        }
+        // try {
+        //     if (!scheduler.isShutdown()) {
+        //         // Not using the Quartz startDelayed method since we explicitly want a daemon
+        //         // thread here, not keeping the JVM alive in case of all other threads ending.
+        //         Thread schedulerThread = new Thread(() -> {
+        //             try {
+        //                 QuartzProperties quartzProperties = this.applicationContext.getBean(QuartzProperties.class);
+        //                 TimeUnit.SECONDS.sleep(quartzProperties.getStartupDelay().getSeconds());
+        //             } catch (InterruptedException ex) {
+        //                 Thread.currentThread().interrupt();
+        //                 // simply proceed
+        //             }
+        //             try {
+        //                 // init all jobs
+        //                 logger.info("reschedule all jobs...");
+        //                 quartzManageService.rescheduleJobs(getJobKeys(), getTriggerKeys(), jobDetailTriggerMap);
+        //                 scheduler.start();
+        //             } catch (Exception ex) {
+        //                 throw new SchedulingException("Could not start Quartz Scheduler after delay", ex);
+        //             }
+        //         });
+        //         schedulerThread.setName("Quartz Scheduler [" + scheduler.getSchedulerName() + "]");
+        //         schedulerThread.setDaemon(true);
+        //         schedulerThread.start();
+        //     }
+        // } catch (SchedulerException e) {
+        //     throw new RuntimeException("定时任务启动异常: " + e.getMessage());
+        // }
     }
 
     private List<TriggerKey> getTriggerKeys() throws SchedulerException {

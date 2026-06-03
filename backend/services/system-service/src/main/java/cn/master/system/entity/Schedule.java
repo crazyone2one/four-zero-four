@@ -73,8 +73,9 @@ public class Schedule implements Serializable {
     /**
      * 资源ID
      */
-    @Schema(description = "资源ID")
-    private String resourceId;
+    @Schema(description = "执行器任务handler", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Size(min = 1, max = 50, message = "{schedule.resource_type.length_range}", groups = {Created.class, Updated.class})
+    private String executorHandler;
 
     /**
      * 是否开启

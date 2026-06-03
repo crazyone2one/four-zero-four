@@ -1,10 +1,12 @@
 package cn.master.system.service.impl;
 
+import cn.master.autoconfigure.QuartzProperties;
 import cn.master.constants.ApplicationNumScope;
 import cn.master.constants.HttpMethodConstants;
 import cn.master.constants.OperationLogType;
 import cn.master.dto.BasePageRequest;
 import cn.master.exception.FZFException;
+import cn.master.quartz.service.QuartzManageService;
 import cn.master.system.dto.ScheduleConfig;
 import cn.master.system.dto.TableBatchProcessDTO;
 import cn.master.system.dto.project.ProjectDTO;
@@ -50,11 +52,21 @@ import static cn.master.system.entity.table.ScheduleTableDef.SCHEDULE;
 public class ScheduleServiceImpl extends ServiceImpl<ScheduleMapper, Schedule> implements ScheduleService {
     private final OperationLogService operationLogService;
     private final ScheduleManager scheduleManager;
+    private final QuartzManageService quartzManageService;
+    private final QuartzProperties quartzProperties;
 
     @Override
     public void addSchedule(Schedule schedule) {
         schedule.setNum(getNextNum(schedule.getProjectId()));
         mapper.insertSelective(schedule);
+        try {
+            quartzManageService.addJobFromAnnotation(schedule.getExecutorHandler(), schedule.getJob(),
+                    schedule.getValue(),
+                    schedule.getConfig());
+        } catch (SchedulerException e) {
+            LogUtils.error(e);
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -123,7 +135,7 @@ public class ScheduleServiceImpl extends ServiceImpl<ScheduleMapper, Schedule> i
                     .module(module)
                     .method(method)
                     .path(path)
-                    .sourceId(s.getResourceId())
+                    .sourceId(s.getExecutorHandler())
                     .content(s.getName())
                     .createUser(userId)
                     .build().getLogDTO();
@@ -166,7 +178,7 @@ public class ScheduleServiceImpl extends ServiceImpl<ScheduleMapper, Schedule> i
     @Override
     public String scheduleConfig(ScheduleConfig scheduleConfig, JobKey jobKey, TriggerKey triggerKey, Class<? extends Job> clazz, String operator) {
         Schedule schedule;
-        List<Schedule> scheduleList = queryChain().where(SCHEDULE.RESOURCE_ID.eq(scheduleConfig.getResourceId())
+        List<Schedule> scheduleList = queryChain().where(SCHEDULE.EXECUTOR_HANDLER.eq(scheduleConfig.getResourceId())
                 .and(SCHEDULE.JOB.eq(clazz.getName()))).list();
         if (CollectionUtils.isNotEmpty(scheduleList)) {
             schedule = scheduleConfig.genCronSchedule(scheduleList.getFirst());
@@ -185,6 +197,16 @@ public class ScheduleServiceImpl extends ServiceImpl<ScheduleMapper, Schedule> i
             scheduleManager.addCronJob(jobKey, triggerKey, clazz, scheduleConfig.getCron(), jobDataMap);
         }
         return schedule.getId();
+    }
+
+    @Override
+    public void modifyCronJobTime(String id, String cron) {
+        Schedule schedule = mapper.selectOneById(id);
+        String jobDetailIdentity = schedule.getJob() + "." + schedule.getExecutorHandler();
+        TriggerKey triggerKey = TriggerKey.triggerKey(jobDetailIdentity, quartzProperties.getGroupName());
+        scheduleManager.modifyCronJobTime(triggerKey, cron);
+        schedule.setValue(cron);
+        mapper.update(schedule);
     }
 
     private void processTaskCenterSchedule(Page<TaskHubScheduleDTO> page, List<String> projectIds) {

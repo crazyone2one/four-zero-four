@@ -1,5 +1,6 @@
 package cn.master.quartz.util;
 
+import lombok.Getter;
 import org.quartz.JobDetail;
 import org.quartz.Trigger;
 
@@ -8,6 +9,7 @@ import org.quartz.Trigger;
  * @since : 2026/5/9, 星期六
  **/
 
+@Getter
 public class JobDetailTrigger {
     JobDetail jobDetail;
     Trigger trigger;
@@ -17,11 +19,4 @@ public class JobDetailTrigger {
         this.trigger = trigger;
     }
 
-    public JobDetail getJobDetail() {
-        return jobDetail;
-    }
-
-    public Trigger getTrigger() {
-        return trigger;
-    }
 }

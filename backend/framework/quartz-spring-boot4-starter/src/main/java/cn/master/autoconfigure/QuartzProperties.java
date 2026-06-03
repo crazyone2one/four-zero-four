@@ -30,6 +30,4 @@ public class QuartzProperties {
     private String groupName = "DEFAULT";
 
     private final Map<String, String> properties = new HashMap<>();
-
-
 }

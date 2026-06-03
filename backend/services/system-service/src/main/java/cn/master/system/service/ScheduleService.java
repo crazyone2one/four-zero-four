@@ -35,4 +35,6 @@ public interface ScheduleService extends IService<Schedule> {
     void addOrUpdateCronJob(Schedule request, JobKey jobKey, TriggerKey triggerKey, Class<? extends Job> clazz);
 
     String scheduleConfig(ScheduleConfig scheduleConfig, JobKey jobKey, TriggerKey triggerKey, Class<? extends Job> clazz, String operator);
+
+    void modifyCronJobTime(String id, String cron);
 }

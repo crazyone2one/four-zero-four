@@ -83,7 +83,7 @@ public class ScheduleManager {
 
     public JobDataMap getDefaultJobDataMap(Schedule schedule, String expression, String userId) {
         JobDataMap jobDataMap = new JobDataMap();
-        jobDataMap.put("resourceId", schedule.getResourceId());
+        jobDataMap.put("resourceId", schedule.getExecutorHandler());
         jobDataMap.put("expression", expression);
         jobDataMap.put("userId", userId);
         jobDataMap.put("config", schedule.getConfig());

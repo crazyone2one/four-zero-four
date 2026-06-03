@@ -35,7 +35,7 @@ public class ScheduleConfig {
             schedule = new Schedule();
         }
         schedule.setName(this.getName());
-        schedule.setResourceId(this.getResourceId());
+        schedule.setExecutorHandler(this.getResourceId());
         schedule.setType(ScheduleType.CRON.name());
         schedule.setKey(this.getKey());
         schedule.setEnable(this.getEnable());

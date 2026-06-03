@@ -43,4 +43,8 @@ public @interface QuartzScheduled {
      * @return the initial delay in milliseconds
      */
     long initialDelay() default 0;
+
+    String name();
+
+    String group() default "DEFAULT";
 }

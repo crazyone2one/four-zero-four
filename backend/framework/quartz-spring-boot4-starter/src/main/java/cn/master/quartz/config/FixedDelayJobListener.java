@@ -77,7 +77,7 @@ public final class FixedDelayJobListener extends JobListenerSupport {
                 scheduler.rescheduleJob(oldTriggerKey, newTrigger);
             }
         } catch (SchedulerException se) {
-            getLog().error("failed to reschedule the job with triger : {}", oldTriggerKey, se);
+            getLog().error("failed to reschedule the job with trigger : {}", oldTriggerKey, se);
         }
     }
 }

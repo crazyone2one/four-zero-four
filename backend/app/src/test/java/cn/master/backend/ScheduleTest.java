@@ -33,15 +33,15 @@ class ScheduleTest {
     @Test
     void testAddSchedule() {
         Schedule schedule = new Schedule();
-        schedule.setName("custom-job");
-        schedule.setResourceId("custom-job");
+        schedule.setName("job1");
+        schedule.setExecutorHandler("job1");
         schedule.setEnable(true);
         schedule.setValue("0 0/1 * * * ?");
-        schedule.setKey("test-resource-id");
+        schedule.setKey("demoJob");
         schedule.setCreateUser("admin");
         schedule.setProjectId(DEFAULT_PROJECT_ID);
-        schedule.setConfig(Map.of("k1", "v1", "k2", 123));
-        schedule.setJob("cn.master.system.job.CustomJob");
+        schedule.setConfig(Map.of("k1", "v1", "k2", 123, "k3", true));
+        schedule.setJob("demoJob");
         schedule.setType(ScheduleType.CRON.name());
         schedule.setResourceType(ScheduleResourceType.DEMO_INFO.name());
         scheduleService.addSchedule(schedule);
@@ -64,7 +64,7 @@ class ScheduleTest {
         Schedule schedule = scheduleService.getById("99368416983000185");
         Map<String, Object> config = schedule.getConfig();
         config.put("k3", true);
-        ScheduleConfig scheduleConfig = ScheduleConfig.builder().enable(true).resourceId(schedule.getResourceId()).projectId(schedule.getProjectId())
+        ScheduleConfig scheduleConfig = ScheduleConfig.builder().enable(true).resourceId(schedule.getExecutorHandler()).projectId(schedule.getProjectId())
                 .name(schedule.getName()).cron(schedule.getValue())
                 .resourceType(schedule.getResourceType()).config(config).build();
         JobKey jobKey = CustomJob.getJobKey(schedule.getKey());
