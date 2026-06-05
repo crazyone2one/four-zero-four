@@ -3,6 +3,7 @@ package cn.master.system.service;
 import cn.master.dto.BasePageRequest;
 import cn.master.system.dto.ScheduleConfig;
 import cn.master.system.dto.TableBatchProcessDTO;
+import cn.master.system.dto.taskhub.ScheduleRequest;
 import cn.master.system.dto.taskhub.TaskHubScheduleDTO;
 import cn.master.system.entity.Schedule;
 import com.mybatisflex.core.paginate.Page;
@@ -36,5 +37,6 @@ public interface ScheduleService extends IService<Schedule> {
 
     String scheduleConfig(ScheduleConfig scheduleConfig, JobKey jobKey, TriggerKey triggerKey, Class<? extends Job> clazz, String operator);
 
-    void modifyCronJobTime(String id, String cron);
+
+    void updateCron(ScheduleRequest request, String userId, String path, String module);
 }

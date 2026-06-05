@@ -20,6 +20,7 @@ declare module 'vue' {
     ButtonAnimation: typeof import('./../components/button-animation/ButtonAnimation.vue')['default']
     ButtonAnimationProvider: typeof import('./../components/button-animation/ButtonAnimationProvider.vue')['default']
     CollapseTransition: typeof import('./../components/collapse-transition/CollapseTransition.vue')['default']
+    CronSelect: typeof import('./../components/cron-select/index.vue')['default']
     EyeBall: typeof import('./../components/animated-characters/EyeBall.vue')['default']
     HelloWorld: typeof import('./../components/HelloWorld.vue')['default']
     NAlert: typeof import('naive-ui')['NAlert']

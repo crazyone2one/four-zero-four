@@ -17,6 +17,11 @@ const routes: RouteRecordRaw[] = [
         children: [
             {path: '/dashboard', name: 'Dashboard', component: () => import('/@/views/dashboard/index.vue')},
             {
+                path: 'task-center',
+                name: 'settingSystemTaskCenter',
+                component: () => import('/@/views/setting/task-center/index.vue')
+            },
+            {
                 path: '/setting', name: 'Setting', children: [
                     {path: 'project', name: 'Project', component: () => import('/@/views/setting/project/index.vue')},
                     {
@@ -28,11 +33,6 @@ const routes: RouteRecordRaw[] = [
                         path: 'user-group',
                         name: 'settingSystemUserGroup',
                         component: () => import('/@/views/setting/user-group/index.vue')
-                    },
-                    {
-                        path: 'task-center',
-                        name: 'settingSystemTaskCenter',
-                        component: () => import('/@/views/setting/task-center/index.vue')
                     },
                     {
                         path: 'custom-field',

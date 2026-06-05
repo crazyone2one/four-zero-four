@@ -3,6 +3,7 @@ package cn.master.system.controller;
 import cn.master.dto.BasePageRequest;
 import cn.master.system.dto.taskhub.TaskHubScheduleDTO;
 import cn.master.system.service.BaseTaskHubService;
+import cn.master.system.service.ScheduleService;
 import com.mybatisflex.core.paginate.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/system/task-center")
 public class SystemTaskHubController {
     private final BaseTaskHubService baseTaskHubService;
+    private final ScheduleService scheduleService;
 
     @PostMapping("/schedule/page")
     @Operation(summary = "系统-任务中心-后台执行任务列表")

@@ -1,5 +1,6 @@
 package cn.master.system.dto.taskhub;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -33,7 +34,7 @@ public class TaskHubScheduleDTO implements Serializable {
     private String id;
 
     @Schema(description = "任务名称")
-    private String taskName;
+    private String name;
 
     @Schema(description = "资源Id")
     private String resourceId;
@@ -48,21 +49,24 @@ public class TaskHubScheduleDTO implements Serializable {
     private String value;
 
     @Schema(description = "上次完成时间")
-    private LocalDateTime lastTime;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private Long lastTime;
 
     @Schema(description = "下次执行时间")
-    private LocalDateTime nextTime;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private Long nextTime;
 
     @Schema(description = "任务状态")
     private boolean enable;
 
     @Schema(description = "操作人")
-    private String createUserId;
+    private String createUser;
 
     @Schema(description = "操作人")
     private String createUserName;
 
     @Schema(description = "操作时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private LocalDateTime createTime;
 
     @Schema(description = "资源num")

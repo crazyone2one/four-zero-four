@@ -17,6 +17,11 @@ const menuOptions: MenuOption[] = [
     icon: () => h('div', {class: 'i-mage:dashboard-chart'})
   },
   {
+    label: () => h(RouterLink, {to: {name: 'settingSystemTaskCenter'}}, {default: () => t('menu.projectManagement.taskCenter')}),
+    key: 'settingSystemTaskCenter',
+    icon: () => h('div', {class: 'i-mage:checklist-note'})
+  },
+  {
     label: t('menu.settings'),
     key: 'Setting',
     icon: () => h('div', {class: 'i-mage:settings'}),
@@ -36,11 +41,7 @@ const menuOptions: MenuOption[] = [
         key: 'settingSystemUserGroup',
         icon: () => h('div', {class: 'i-mage:user-check'})
       },
-      {
-        label: () => h(RouterLink, {to: {name: 'settingSystemTaskCenter'}}, {default: () => t('menu.projectManagement.taskCenter')}),
-        key: 'settingSystemTaskCenter',
-        icon: () => h('div', {class: 'i-mage:checklist-note'})
-      },
+
       {
         label: () => h(RouterLink, {to: {name: 'settingCustomField'}}, {default: () => t('menu.settings.organization.templateFieldSetting')}),
         key: 'settingCustomField',

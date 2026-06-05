@@ -3,6 +3,7 @@ package cn.master.system.job;
 import cn.master.quartz.anno.QuartzScheduled;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.Map;
 
 /**
@@ -14,7 +15,7 @@ public class DemoJob {
 
     @QuartzScheduled(name = "job1")
     public void demoJob1() {
-        System.out.println("demoJob1 execute");
+        System.out.println("demoJob1 execute @ " + LocalDateTime.now());
     }
 
     @QuartzScheduled(name = "job2")
