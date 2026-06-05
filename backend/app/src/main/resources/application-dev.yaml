@@ -24,4 +24,3 @@ springdoc:
 logging:
   level:
     root: info
-    cn.master: debug

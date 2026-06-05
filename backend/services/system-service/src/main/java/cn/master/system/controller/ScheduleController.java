@@ -1,8 +1,10 @@
 package cn.master.system.controller;
 
 import cn.master.constants.OperationLogModule;
+import cn.master.dto.BasePageRequest;
 import cn.master.security.util.SecurityUtils;
 import cn.master.system.dto.taskhub.ScheduleRequest;
+import cn.master.system.dto.taskhub.TaskHubScheduleDTO;
 import cn.master.system.entity.Schedule;
 import cn.master.system.service.ScheduleService;
 import com.mybatisflex.core.paginate.Page;
@@ -29,16 +31,10 @@ public class ScheduleController {
 
     private final ScheduleService scheduleService;
 
-    /**
-     * 保存定时任务。
-     *
-     * @param schedule 定时任务
-     * @return {@code true} 保存成功，{@code false} 保存失败
-     */
     @PostMapping("save")
     @Operation(description = "保存定时任务")
-    public boolean save(@RequestBody @Parameter(description = "定时任务") Schedule schedule) {
-        return scheduleService.save(schedule);
+    public void save(@RequestBody @Parameter(description = "定时任务") Schedule schedule) {
+        scheduleService.addSchedule(schedule, SecurityUtils.getUserId());
     }
 
     /**
@@ -88,16 +84,10 @@ public class ScheduleController {
         return scheduleService.getById(id);
     }
 
-    /**
-     * 分页查询定时任务。
-     *
-     * @param page 分页对象
-     * @return 分页对象
-     */
-    @GetMapping("page")
-    @Operation(description = "分页查询定时任务")
-    public Page<Schedule> page(@Parameter(description = "分页信息") Page<Schedule> page) {
-        return scheduleService.page(page);
+    @PostMapping("/page")
+    @Operation(summary = "系统-任务中心-后台执行任务列表")
+    public Page<TaskHubScheduleDTO> scheduleList(@Validated @RequestBody BasePageRequest request) {
+        return scheduleService.getSchedulePage(request);
     }
 
     @GetMapping("/switch/{id}")

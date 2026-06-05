@@ -5,7 +5,6 @@ export interface ITaskDetailInfo extends IUpdateTaskInfo {
     reportId?: string;
     resourceId: string; // 资源ID
     num: number;
-    resourceType: string; // 资源类型
     resourceNum: number; // 资源num
     nextTime: string;
     createUser: string;
@@ -24,4 +23,6 @@ export interface IUpdateTaskInfo {
     projectId?: string;
     job?: string;
     enable: boolean;
+    resourceType: string;
+    type?: string;
 }

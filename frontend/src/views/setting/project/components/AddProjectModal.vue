@@ -37,7 +37,8 @@ const {loading, form, reset, send} = useForm(formData => projectApi.createProjec
     description: '',
     enable: true,
     userIds: user.value.id ? [user.value.id] : [],
-    organizationId: appStore.appStore.currentOrgId
+    organizationId: appStore.appStore.currentOrgId,
+    id: ''
   },
   resetAfterSubmiting: true,
 })

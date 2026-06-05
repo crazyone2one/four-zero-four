@@ -21,11 +21,11 @@ import java.util.List;
  * @since 2026-05-22
  */
 public interface ScheduleService extends IService<Schedule> {
-    void addSchedule(Schedule schedule);
+    void addSchedule(Schedule schedule, String userId);
 
     void editSchedule(Schedule schedule);
 
-    Page<TaskHubScheduleDTO> getSchedulePage(BasePageRequest request, List<String> projectIds);
+    Page<TaskHubScheduleDTO> getSchedulePage(BasePageRequest request);
 
     Schedule checkScheduleExit(String id);
 

@@ -6,14 +6,19 @@ import {type DataTableColumns, NButton, NFlex, NSwitch} from "naive-ui";
 import type {ITaskDetailInfo} from "/@/typings/task.ts";
 import {useI18n} from "/@/composables/useI18n.ts";
 import CronSelect from '/@/components/cron-select/index.vue'
+import {useAppStore} from "/@/stores";
+import EditScheduleModal from "/@/views/setting/task-center/components/EditScheduleModal.vue";
 
 const {t} = useI18n()
 const keyword = ref('');
+const showEditModal = ref(false);
+const appStore = useAppStore()
 const checkedRowKeys = ref<string[]>([])
 const {send: fetchData, data, total, page, pageSize, loading} = usePagination((page, pageSize) => {
   const param: ITableQueryParams = {
     page, pageSize,
     keyword: keyword.value,
+    projectId: appStore.appStore.currentProjectId
   }
   return systemTaskApi.getTaskPage(param)
 }, {
@@ -29,11 +34,16 @@ const columns: DataTableColumns<ITaskDetailInfo> = [
   {title: t('ms.taskCenter.taskName'), key: 'name', ellipsis: {tooltip: true}, width: 200},
   {
     title: t('common.status'), key: 'enable', width: 50, render(row) {
-      return h(NSwitch, {size: 'small', value: row.enable, onUpdateValue: (v) => handleEnableChange(v, row)})
+      return h(NSwitch, {
+        size: 'small',
+        value: row.enable,
+        disabled: true,
+        onUpdateValue: (v) => handleEnableChange(v, row)
+      })
     }
   },
   {
-    title: t('ms.taskCenter.runRule'), key: 'value', width: 220, render(row) {
+    title: t('ms.taskCenter.runRule'), key: 'value', width: 120, render(row) {
       return h(CronSelect, {
         modelValue: row.value,
         loading: row.runRuleLoading,
@@ -43,7 +53,18 @@ const columns: DataTableColumns<ITaskDetailInfo> = [
   },
   {title: t('ms.taskCenter.lastFinishTime'), key: 'lastTime', width: 170},
   {title: t('ms.taskCenter.nextExecuteTime'), key: 'nextTime', width: 170},
-  {title: t('common.operation'), key: 'operation', width: 170, fixed: 'right'}
+  {
+    title: t('common.operation'), key: 'operation', width: 170, fixed: 'right', render(row) {
+      return h(NFlex, {}, {
+        default: () => [
+          h(NButton, {disabled: true,text: true}, {default: () => t('common.edit')}),
+          h(NButton, {disabled: true,text: true}, {default: () => t('common.execute')}),
+          h(NButton, {disabled: true,text: true}, {default: () => t('common.stop')}),
+          h(NButton, {disabled: true,text: true}, {default: () => t('common.delete')}),
+        ]
+      })
+    }
+  }
 ]
 const {send: fetchUpdateCron} = useRequest(param => systemTaskApi.editCron(param), {immediate: false})
 const handleRunRuleChange = (v: string, record: ITaskDetailInfo) => {
@@ -61,7 +82,7 @@ const handleEnableChange = (_: boolean, record: ITaskDetailInfo) => {
   })
 }
 const handleUpdateTask = () => {
-
+  showEditModal.value = true
 }
 onMounted(() => {
   fetchData()
@@ -92,6 +113,7 @@ onMounted(() => {
                         :total="total" @clear="checkedRowKeys=[]"/>
     </template>
   </n-card>
+  <edit-schedule-modal v-model:show-modal="showEditModal"/>
 </template>
 
 <style scoped>

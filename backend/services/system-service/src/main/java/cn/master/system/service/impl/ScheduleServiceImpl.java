@@ -38,9 +38,7 @@ import org.quartz.TriggerKey;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static cn.master.system.entity.table.OrganizationTableDef.ORGANIZATION;
@@ -63,10 +61,11 @@ public class ScheduleServiceImpl extends ServiceImpl<ScheduleMapper, Schedule> i
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void addSchedule(Schedule schedule) {
+    public void addSchedule(Schedule schedule, String userId) {
         schedule.setNum(getNextNum(schedule.getProjectId()));
+        schedule.setCreateUser(userId);
         mapper.insertSelective(schedule);
-        Map<String, Object> scheduleConfig = schedule.getConfig();
+        Map<String, Object> scheduleConfig = Optional.ofNullable(schedule.getConfig()).orElse(new HashMap<>());
         scheduleConfig.put("projectId", schedule.getProjectId());
         quartzManageService.addJobFromAnnotation(schedule.getExecutorHandler(), schedule.getJob(), schedule.getValue(), scheduleConfig);
     }
@@ -81,20 +80,22 @@ public class ScheduleServiceImpl extends ServiceImpl<ScheduleMapper, Schedule> i
     }
 
     @Override
-    public Page<TaskHubScheduleDTO> getSchedulePage(BasePageRequest request, List<String> projectIds) {
+    public Page<TaskHubScheduleDTO> getSchedulePage(BasePageRequest request) {
         Page<TaskHubScheduleDTO> page = queryChain()
                 .select(SCHEDULE.ID, SCHEDULE.PROJECT_ID, SCHEDULE.RESOURCE_TYPE, SCHEDULE.VALUE, SCHEDULE.ENABLE)
+                .select(SCHEDULE.NUM, SCHEDULE.CREATE_TIME, SCHEDULE.CREATE_USER)
                 .select(SCHEDULE.NAME, PROJECT.NAME.as("projectName"), PROJECT.NUM.as("resourceNum"))
-                .select("QRTZ_TRIGGERS.PREV_FIRE_TIME").as("last_time")
-                .select("QRTZ_TRIGGERS.NEXT_FIRE_TIME").as("nextTime")
-                .from(SCHEDULE)
+                .select("QRTZ_TRIGGERS.PREV_FIRE_TIME AS last_time")
+                .select("QRTZ_TRIGGERS.NEXT_FIRE_TIME AS nextTime")
+                .from(SCHEDULE.as("s"))
                 .leftJoin(PROJECT).on(SCHEDULE.PROJECT_ID.eq(PROJECT.ID))
-                .leftJoin("QRTZ_TRIGGERS").on(SCHEDULE.JOB.eq("QRTZ_TRIGGERS.JOB_GROUP").and(SCHEDULE.KEY.eq("QRTZ_TRIGGERS.TRIGGER_NAME")))
-                .where(SCHEDULE.PROJECT_ID.in(projectIds)
+                .leftJoin("QRTZ_TRIGGERS").on("CONCAT(s.job, '.', s.executor_handler) = QRTZ_TRIGGERS.TRIGGER_NAME")
+                .where(SCHEDULE.PROJECT_ID.eq(request.getProjectId())
                         .and(SCHEDULE.NAME.like(request.getKeyword())
                                 .or(SCHEDULE.NUM.like(request.getKeyword()))))
+                .orderBy(SCHEDULE.ENABLE.desc(), SCHEDULE.CREATE_TIME.desc())
                 .pageAs(new Page<>(request.getPage(), request.getPageSize()), TaskHubScheduleDTO.class);
-        processTaskCenterSchedule(page, projectIds);
+        processTaskCenterSchedule(page);
         return page;
     }
 
@@ -209,7 +210,7 @@ public class ScheduleServiceImpl extends ServiceImpl<ScheduleMapper, Schedule> i
         return TriggerKey.triggerKey(jobDetailIdentity, quartzProperties.getGroupName());
     }
 
-    private void processTaskCenterSchedule(Page<TaskHubScheduleDTO> page, List<String> projectIds) {
+    private void processTaskCenterSchedule(Page<TaskHubScheduleDTO> page) {
 
     }
 }
