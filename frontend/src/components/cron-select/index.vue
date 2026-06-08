@@ -2,12 +2,14 @@
 import {useI18n} from "/@/composables/useI18n.ts";
 import type {SelectOption} from "naive-ui";
 
-const cron = defineModel<string>('modelValue', {required: true,});
-const loading = defineModel<boolean>('loading', {required: false,});
-const props = defineProps<{
+type ICronSelectorProps = {
   class?: string;
   disabled?: boolean;
-}>();
+  size?: 'tiny' | 'small' | 'medium' | 'large'
+}
+const cron = defineModel<string>('modelValue', {required: true,});
+const loading = defineModel<boolean>('loading', {required: false,});
+const props = withDefaults(defineProps<ICronSelectorProps>(), {size: 'small'});
 const emit = defineEmits<{ (e: 'changeCron', value: string): void; }>();
 const {t} = useI18n()
 const options: Array<SelectOption> = [
@@ -36,7 +38,7 @@ const handleUpdateValue = (v: string) => {
             :disabled="props.disabled"
             :class="props.class"
             :placeholder="t('ms.cron.select.placeholder')"
-
+            :size="props.size"
             filterable
             tag
             @update:value="handleUpdateValue"/>
