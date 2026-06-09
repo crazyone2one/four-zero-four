@@ -66,6 +66,7 @@ public class QuartzManageService {
             String jobDetailIdentity = beanName + "." + jobName;
             if (cron != null && !cron.isEmpty()) {
                 jobDetail = JobBuilder.newJob(ClusterQuartzJobBean.class)
+                        // .withIdentity(jobDetailIdentity, quartzProperties.getGroupName())
                         .storeDurably(true).usingJobData(jobDataMap).build();
                 trigger = TriggerBuilder.newTrigger().withIdentity(TriggerKey.triggerKey(jobDetailIdentity, quartzProperties.getGroupName()))
                         .startAt(new Date(now.plusMillis(initialDelay).toEpochMilli()))
@@ -74,6 +75,7 @@ public class QuartzManageService {
             } else if (fixedDelay > 0) {
                 jobDataMap.put(FixedDelayJobListener.FIXED_DELAY_JOB_DATA, new FixedDelayJobData(fixedDelay));
                 jobDetail = JobBuilder.newJob(ClusterQuartzFixedDelayJobBean.class)
+                        // .withIdentity(jobDetailIdentity, quartzProperties.getGroupName())
                         .storeDurably(true).usingJobData(jobDataMap).build();
                 trigger = TriggerBuilder.newTrigger().withIdentity(TriggerKey.triggerKey(jobDetailIdentity, quartzProperties.getGroupName()))
                         .startAt(new Date(now.plusMillis(initialDelay).toEpochMilli()))
@@ -81,6 +83,7 @@ public class QuartzManageService {
                         .build();
             } else {
                 jobDetail = JobBuilder.newJob(ClusterQuartzJobBean.class)
+                        // .withIdentity(jobDetailIdentity, quartzProperties.getGroupName())
                         .storeDurably(true).usingJobData(jobDataMap).build();
                 trigger = TriggerBuilder.newTrigger().withIdentity(TriggerKey.triggerKey(jobDetailIdentity, quartzProperties.getGroupName()))
                         .startAt(new Date(now.plusMillis(initialDelay).toEpochMilli()))
@@ -151,8 +154,12 @@ public class QuartzManageService {
         scheduler.deleteJob(jobKey);
     }
 
-    public void pauseJob(JobKey jobKey) throws Exception {
-        scheduler.pauseJob(jobKey);
+    public void pauseJob(JobKey jobKey)  {
+        try {
+            scheduler.pauseJob(jobKey);
+        } catch (SchedulerException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void pauseTrigger(TriggerKey triggerKey) throws Exception {
@@ -179,8 +186,12 @@ public class QuartzManageService {
         return scheduler.checkExists(jobKey);
     }
 
-    public JobKey getJobKey(TriggerKey triggerKey) throws Exception {
-        return scheduler.getTrigger(triggerKey).getJobKey();
+    public JobKey getJobKey(TriggerKey triggerKey) {
+        try {
+            return scheduler.getTrigger(triggerKey).getJobKey();
+        } catch (SchedulerException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void addJob(JobDetail jobDetail, Trigger trigger) throws Exception {

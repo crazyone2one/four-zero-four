@@ -2,7 +2,7 @@
 
 import type {FormItemType, IAddOrUpdateField, IFieldIconAndNameModal, IFieldOptions} from "/@/typings/custom-field.ts";
 import type {FormInst} from "naive-ui";
-import {useForm} from "alova/client";
+import {useForm, useRequest} from "alova/client";
 import {customFieldApi} from "/@/api/modules/custom-field.ts";
 import {useI18n} from "/@/composables/useI18n.ts";
 import type {IFormItemModel} from "/@/components/batch-form/types.ts";
@@ -31,6 +31,7 @@ const initFieldForm: IAddOrUpdateField = {
   scene: 'COMMON',
   options: [],
   enableOptionKey: false,
+  fieldKey: ''
 };
 const {form, loading, reset, send} = useForm((formData) => {
   const formCopy = cloneDeep(formData);
@@ -40,7 +41,7 @@ const {form, loading, reset, send} = useForm((formData) => {
   if (formCopy.type === 'NUMBER') {
     formCopy.type = selectNumber.value;
   }
-  const {id, name, options, scene, type, remark, enableOptionKey} = formCopy;
+  const {id, name, options, scene, type, remark, enableOptionKey, fieldKey} = formCopy;
   const params: IAddOrUpdateField = {
     name,
     used: false,
@@ -49,7 +50,7 @@ const {form, loading, reset, send} = useForm((formData) => {
     scene,
     type,
     remark,
-    enableOptionKey,
+    enableOptionKey, fieldKey
   };
   if (id) {
     params.id = id;
@@ -82,9 +83,10 @@ const handleSubmit = async () => {
             if (showOptionsSelect.value) {
               let startPos = 1;
               form.value.options = (batchFormRef.value?.getFormResult() || []).map(item => {
+                console.log(item)
                 const currentItem: IFieldOptions = {
                   text: item.text,
-                  value: item.value ? item.value : getGenerateId(),
+                  value: item.text || getGenerateId(),
                   pos: startPos,
                 };
                 if (item.fieldId) {
@@ -136,10 +138,23 @@ const handleFieldChange = (_: string) => {
   optionsModels.value = [{...onlyOptions.value}]
   fieldDefaultValues.value = [];
 }
-
+const {send: fetchDetail} = useRequest(id => customFieldApi.getDetail(id), {immediate: false})
+const editHandler = (item: IAddOrUpdateField) => {
+  showModal.value = true
+  if (item.id) {
+    fetchDetail(item.id).then(res => {
+      form.value = {
+        ...res
+      }
+      fieldDefaultValues.value = res.options?.map((item: any) => {
+        return {...item}
+      }) || []
+    })
+  }
+};
 watch(() => form.value.enableOptionKey, () => {
   optionsModels.value = [{...onlyOptions.value}]
-})
+}, {immediate: true})
 watchEffect(() => {
   isEdit.value = !!form.value.id;
 });
@@ -147,22 +162,32 @@ onMounted(() => {
   const excludeOptions = ['MULTIPLE_MEMBER', 'DATETIME', 'SYSTEM', 'INT', 'FLOAT'];
   fieldOptions.value = fieldIconAndName.filter((item: IFieldIconAndNameModal) => excludeOptions.indexOf(item.value as string) < 0);
 });
+defineExpose({
+  editHandler,
+});
 </script>
 
 <template>
-  <n-drawer v-model:show="showModal" :width="800">
+  <n-drawer v-model:show="showModal" :width="500">
     <n-drawer-content>
       <template #header>
         <div v-if="isEdit">{{ $t('system.orgTemplate.update') }}</div>
         <div v-else>{{ $t('system.orgTemplate.addField') }}</div>
       </template>
       <div class="form">
-        <n-form ref="formRef" :model="form" :rules="rules" class="rounded-[4px]" label-placement="left" label-width="auto"
+        <n-form ref="formRef" :model="form" :rules="rules" class="rounded-[4px]" label-placement="left"
+                label-width="auto"
                 label-align="right">
           <n-form-item :label="$t('system.orgTemplate.fieldName')" path="name">
             <n-input v-model:value="form.name"
                      :disabled="form.internal"
                      :placeholder="$t('system.orgTemplate.fieldNamePlaceholder')"
+                     clearable :maxlength="255"/>
+          </n-form-item>
+          <n-form-item :label="$t('system.orgTemplate.optionKeyValue')" path="fieldKey">
+            <n-input v-model:value="form.fieldKey"
+                     :disabled="form.internal"
+                     :placeholder="$t('system.orgTemplate.optionKeyValue')"
                      clearable :maxlength="255"/>
           </n-form-item>
           <n-form-item :label="$t('common.desc')" path="remark">

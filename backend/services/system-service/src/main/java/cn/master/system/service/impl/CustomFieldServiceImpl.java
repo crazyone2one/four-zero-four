@@ -2,7 +2,6 @@ package cn.master.system.service.impl;
 
 import cn.master.constants.CustomFieldType;
 import cn.master.constants.TemplateScene;
-import cn.master.constants.TemplateScopeType;
 import cn.master.exception.FZFException;
 import cn.master.system.dto.CustomFieldDTO;
 import cn.master.system.dto.request.CustomFieldOptionRequest;
@@ -60,6 +59,7 @@ public class CustomFieldServiceImpl extends ServiceImpl<CustomFieldMapper, Custo
         boolean exists = queryChain().where(CustomField::getScopeId).eq(customField.getScopeId())
                 .and(CustomField::getName).eq(customField.getName())
                 .and(CustomField::getScene).eq(customField.getScene())
+                .and(CustomField::getFieldKey).eq(customField.getFieldKey())
                 .exists();
         if (exists) {
             throw new FZFException(CUSTOM_FIELD_EXIST);
@@ -71,7 +71,7 @@ public class CustomFieldServiceImpl extends ServiceImpl<CustomFieldMapper, Custo
     public CustomField add(CustomField customField, List<CustomFieldOptionRequest> options) {
         Project project = projectService.checkResourceExist(customField.getScopeId());
         checkTemplateEnable(project.getOrganizationId(), customField.getScene());
-        customField.setScopeType(TemplateScopeType.PROJECT.name());
+        // customField.setScopeType(TemplateScopeType.PROJECT.name());
         customField.setInternal(false);
         List<CustomFieldOption> customFieldOptions = parseCustomFieldOptionRequest2Option(options);
         // baseAdd(customField, customFieldOptions);
@@ -180,7 +180,7 @@ public class CustomFieldServiceImpl extends ServiceImpl<CustomFieldMapper, Custo
         List<CustomFieldDTO> customFields = page.getRecords();
         List<CustomFieldOption> customFieldOptions = customFieldOptionService.getByFieldIds(customFields.stream().map(CustomField::getId).toList());
         Map<String, List<CustomFieldOption>> optionMap = customFieldOptions.stream().collect(Collectors.groupingBy(CustomFieldOption::getFieldId));
-        page.getRecords().stream().map(item -> {
+        page.getRecords().forEach(item -> {
             item.setOptions(optionMap.get(item.getId()));
             if (CustomFieldType.getHasOptionValueSet().contains(item.getType()) && item.getOptions() == null) {
                 item.setOptions(List.of());
@@ -194,9 +194,7 @@ public class CustomFieldServiceImpl extends ServiceImpl<CustomFieldMapper, Custo
                 createUserOption.setInternal(false);
                 item.setOptions(List.of(createUserOption));
             }
-            return item;
         });
-
         return page;
     }
 
@@ -204,8 +202,18 @@ public class CustomFieldServiceImpl extends ServiceImpl<CustomFieldMapper, Custo
     public List<CustomFieldDTO> listCustomField(String scopeId, String scene) {
         projectService.checkResourceExist(scopeId);
         checkScene(scene);
-        return queryChain().where(CustomField::getScopeId).eq(scopeId)
+        List<CustomFieldDTO> lists = queryChain().where(CustomField::getScopeId).eq(scopeId)
                 .and(CustomField::getScene).eq(scene).listAs(CustomFieldDTO.class);
+        lists.forEach(item -> item.setOptions(customFieldOptionService.getByFieldId(item.getId())));
+        return lists;
+    }
+
+    @Override
+    public List<CustomFieldDTO> listCustomFieldByScene(String scene) {
+        checkScene(scene);
+        List<CustomFieldDTO> customFields = queryChain().where(CustomField::getScene).eq(scene).listAs(CustomFieldDTO.class);
+        customFields.forEach(item -> item.setOptions(customFieldOptionService.getByFieldId(item.getId())));
+        return customFields;
     }
 
     private void checkScene(String scene) {

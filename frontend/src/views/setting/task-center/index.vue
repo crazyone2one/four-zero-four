@@ -8,10 +8,12 @@ import {useI18n} from "/@/composables/useI18n.ts";
 import CronSelect from '/@/components/cron-select/index.vue'
 import {useAppStore} from "/@/stores";
 import EditScheduleModal from "/@/views/setting/task-center/components/EditScheduleModal.vue";
+import ConfigDrawer from "/@/views/setting/task-center/components/ConfigDrawer.vue";
 
 const {t} = useI18n()
 const keyword = ref('');
 const showEditModal = ref(false);
+const showConfigFlag = ref(false);
 const appStore = useAppStore()
 const checkedRowKeys = ref<string[]>([])
 const {send: fetchData, data, total, page, pageSize, loading} = usePagination((page, pageSize) => {
@@ -57,10 +59,18 @@ const columns: DataTableColumns<ITaskDetailInfo> = [
     title: t('common.operation'), key: 'operation', width: 170, fixed: 'right', render(row) {
       return h(NFlex, {}, {
         default: () => [
-          h(NButton, {disabled: true,text: true}, {default: () => t('common.edit')}),
-          h(NButton, {disabled: true,text: true}, {default: () => t('common.execute')}),
-          h(NButton, {disabled: true,text: true}, {default: () => t('common.stop')}),
-          h(NButton, {disabled: true,text: true}, {default: () => t('common.delete')}),
+          h(NButton, {disabled: true, text: true}, {default: () => t('common.edit')}),
+          h(NButton, {
+            type: 'info',
+            text: true,
+            onClick: () => handleShowConfig(row)
+          }, {default: () => t('common.config')}),
+          h(NButton, {disabled: true, text: true}, {default: () => t('common.execute')}),
+          h(NButton, {
+            text: true, type: 'warning',
+            onClick: () => handlePauseOrResume(row)
+          }, {default: () => t(row.triggerState === 'PAUSED' ? 'common.open' : 'common.stop')}),
+          h(NButton, {disabled: true, text: true}, {default: () => t('common.delete')}),
         ]
       })
     }
@@ -81,8 +91,21 @@ const handleEnableChange = (_: boolean, record: ITaskDetailInfo) => {
     fetchData()
   })
 }
+const {send: fetchPauseOrResume} = useRequest(record => {
+  return record.triggerState === 'PAUSED' ? systemTaskApi.scheduleResumeJob(record.id) : systemTaskApi.schedulePause(record.id)
+}, {immediate: false})
+const handlePauseOrResume = (record: ITaskDetailInfo) => {
+  fetchPauseOrResume(record).then(() => {
+    window.$message?.success(t(record.triggerState === 'PAUSED' ? 'ms.taskCenter.openTaskSuccess' : 'ms.taskCenter.closeTaskSuccess'))
+    fetchData()
+  })
+}
 const handleUpdateTask = () => {
   showEditModal.value = true
+}
+const handleShowConfig = (record: ITaskDetailInfo) => {
+  showConfigFlag.value = true
+  console.log(record)
 }
 onMounted(() => {
   fetchData()
@@ -113,7 +136,8 @@ onMounted(() => {
                         :total="total" @clear="checkedRowKeys=[]"/>
     </template>
   </n-card>
-  <edit-schedule-modal v-model:show-modal="showEditModal"/>
+  <edit-schedule-modal v-model:show-modal="showEditModal" @refresh="fetchData"/>
+  <config-drawer v-model:active="showConfigFlag"/>
 </template>
 
 <style scoped>

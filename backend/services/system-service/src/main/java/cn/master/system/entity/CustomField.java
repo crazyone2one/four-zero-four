@@ -74,6 +74,7 @@ public class CustomField implements Serializable {
     @NotBlank(message = "{custom_field.scope_type.not_blank}", groups = {Created.class})
     @Size(min = 1, max = 50, message = "{custom_field.scope_type.length_range}", groups = {Created.class, Updated.class})
     private String scopeType;
+    private String fieldKey;
 
     /**
      * 创建时间

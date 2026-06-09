@@ -62,6 +62,8 @@ declare module 'vue' {
     NSplit: typeof import('naive-ui')['NSplit']
     NSwitch: typeof import('naive-ui')['NSwitch']
     NTooltip: typeof import('naive-ui')['NTooltip']
+    NTransfer: typeof import('naive-ui')['NTransfer']
+    Popcomfirm: typeof import('./../components/popcomfirm/index.vue')['default']
     Pupil: typeof import('./../components/animated-characters/Pupil.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']

@@ -37,6 +37,9 @@ public interface ScheduleService extends IService<Schedule> {
 
     String scheduleConfig(ScheduleConfig scheduleConfig, JobKey jobKey, TriggerKey triggerKey, Class<? extends Job> clazz, String operator);
 
-
     void updateCron(ScheduleRequest request, String userId, String path, String module);
+
+    void pause(String id, String userId, String path, String module);
+
+    void resumeJob(String id, String userId, String path, String module);
 }

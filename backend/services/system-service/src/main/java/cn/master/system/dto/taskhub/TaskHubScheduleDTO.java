@@ -72,4 +72,5 @@ public class TaskHubScheduleDTO implements Serializable {
     @Schema(description = "资源num")
     private String resourceNum;
 
+    private String triggerState;
 }

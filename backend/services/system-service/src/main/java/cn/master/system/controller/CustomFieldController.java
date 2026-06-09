@@ -71,10 +71,17 @@ public class CustomFieldController {
     @GetMapping("/list/{scopeId}/{scene}")
     @Operation(description = "查询所有自定义字段")
     public List<CustomFieldDTO> list(@Schema(description = "项目ID", requiredMode = Schema.RequiredMode.REQUIRED)
-                                  @PathVariable String scopeId,
-                                  @Schema(description = "模板的使用场景（FUNCTIONAL,BUG,API,UI,TEST_PLAN）", requiredMode = Schema.RequiredMode.REQUIRED)
-                                  @PathVariable String scene) {
+                                     @PathVariable String scopeId,
+                                     @Schema(description = "模板的使用场景", requiredMode = Schema.RequiredMode.REQUIRED)
+                                     @PathVariable String scene) {
         return customFieldService.listCustomField(scopeId, scene);
+    }
+
+    @GetMapping("/list/{scene}")
+    @Operation(description = "查询所有自定义字段")
+    public List<CustomFieldDTO> list(@Schema(description = "模板的使用场景", requiredMode = Schema.RequiredMode.REQUIRED)
+                                     @PathVariable String scene) {
+        return customFieldService.listCustomFieldByScene(scene);
     }
 
     /**

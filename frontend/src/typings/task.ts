@@ -11,6 +11,7 @@ export interface ITaskDetailInfo extends IUpdateTaskInfo {
     createUserName?: string;
     createTime: number;
     runRuleLoading?: boolean
+    triggerState?: string;
 
     [key: string]: any;
 }

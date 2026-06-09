@@ -7,8 +7,9 @@ import type {FormInst} from "naive-ui";
 const showModal = defineModel('showModal', {default: false});
 const appStore = useAppStore()
 const formRef = ref<FormInst | null>(null)
-const {form, reset, send, loading} = useForm(formdata => {
-  return systemTaskApi.saveOrUpdateTask(formdata)
+const emits = defineEmits(['refresh'])
+const {form, reset, send, loading} = useForm(formData => {
+  return systemTaskApi.saveOrUpdateTask(formData)
 }, {
   initialForm: {
     name: '',
@@ -32,6 +33,7 @@ const handleSubmit = () => {
     if (!err) {
       send().then(() => {
         handleCancel()
+        emits('refresh')
       })
     }
   })

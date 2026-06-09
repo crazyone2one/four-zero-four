@@ -8,4 +8,6 @@ export const customFieldApi = {
     ),
     deleteOrdField: (id: string) => FZFR.Get(`custom/field/remove/${id}`),
     getFieldPage: (params: ITableQueryParams) => FZFR.Post<IPageResponse<ICustomField>>('custom/field/page', params),
+    getFieldListByScene: (scene: string) => FZFR.Get<Array<ICustomField>>(`custom/field/list/${scene}`),
+    getDetail: (id: string) => FZFR.Get<any>(`custom/field/getInfo/${id}`),
 }

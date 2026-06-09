@@ -87,6 +87,7 @@ public class ScheduleServiceImpl extends ServiceImpl<ScheduleMapper, Schedule> i
                 .select(SCHEDULE.NAME, PROJECT.NAME.as("projectName"), PROJECT.NUM.as("resourceNum"))
                 .select("QRTZ_TRIGGERS.PREV_FIRE_TIME AS last_time")
                 .select("QRTZ_TRIGGERS.NEXT_FIRE_TIME AS nextTime")
+                .select("QRTZ_TRIGGERS.TRIGGER_STATE")
                 .from(SCHEDULE.as("s"))
                 .leftJoin(PROJECT).on(SCHEDULE.PROJECT_ID.eq(PROJECT.ID))
                 .leftJoin("QRTZ_TRIGGERS").on("CONCAT(s.job, '.', s.executor_handler) = QRTZ_TRIGGERS.TRIGGER_NAME")
@@ -203,6 +204,26 @@ public class ScheduleServiceImpl extends ServiceImpl<ScheduleMapper, Schedule> i
         mapper.update(schedule);
         quartzManageService.modifyCronJobTime(getTriggerKey(schedule), request.cron());
         saveLog(List.of(schedule), userId, path, HttpMethodConstants.GET.name(), module, OperationLogType.UPDATE.name());
+    }
+
+    @Override
+    public void pause(String id, String userId, String path, String module) {
+        Schedule schedule = checkScheduleExit(id);
+        JobKey jobKey = quartzManageService.getJobKey(getTriggerKey(schedule));
+        quartzManageService.pauseJob(jobKey);
+        saveLog(List.of(schedule), userId, path, HttpMethodConstants.GET.name(), module, OperationLogType.UPDATE.name());
+    }
+
+    @Override
+    public void resumeJob(String id, String userId, String path, String module) {
+        Schedule schedule = checkScheduleExit(id);
+        JobKey jobKey = quartzManageService.getJobKey(getTriggerKey(schedule));
+        try {
+            quartzManageService.resumeJob(jobKey);
+            saveLog(List.of(schedule), userId, path, HttpMethodConstants.GET.name(), module, OperationLogType.UPDATE.name());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private @NonNull TriggerKey getTriggerKey(Schedule schedule) {

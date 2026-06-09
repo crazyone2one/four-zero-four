@@ -52,4 +52,7 @@ public class CustomFieldUpdateRequest {
     @Valid
     @Schema(title = "自定义字段选项")
     private List<CustomFieldOptionRequest> options;
+
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+    private String fieldKey;
 }

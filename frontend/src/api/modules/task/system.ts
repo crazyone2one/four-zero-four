@@ -19,5 +19,7 @@ export const systemTaskApi = {
         }),
     editCron: (data: { id: string, cron: string }) => FZFR.Post('/schedule/update-cron', data),
     scheduleSwitch: (id: string) => FZFR.Get(`/schedule/switch/${id}`),
+    schedulePause: (id: string) => FZFR.Get(`/schedule/pause/${id}`),
+    scheduleResumeJob: (id: string) => FZFR.Get(`/schedule/resumeJob/${id}`),
     saveOrUpdateTask: (data: IUpdateTaskInfo) => FZFR.Post(data.id ? '/schedule/update' : '/schedule/save', data),
 }

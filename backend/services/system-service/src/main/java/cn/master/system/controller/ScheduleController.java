@@ -93,12 +93,24 @@ public class ScheduleController {
     @GetMapping("/switch/{id}")
     @Operation(summary = "系统-任务中心-后台任务开启关闭")
     public void enable(@PathVariable String id) {
-        scheduleService.enable(id, SecurityUtils.getUserId(), "/system/task-center/schedule/switch/", OperationLogModule.SETTING_SYSTEM_TASK_CENTER);
+        scheduleService.enable(id, SecurityUtils.getUserId(), "/schedule/switch/", OperationLogModule.SETTING_SYSTEM_TASK_CENTER);
+    }
+
+    @GetMapping("/pause/{id}")
+    @Operation(summary = "系统-任务中心-后台任务开启关闭")
+    public void pause(@PathVariable String id) {
+        scheduleService.pause(id, SecurityUtils.getUserId(), "/schedule/pause/", OperationLogModule.SETTING_SYSTEM_TASK_CENTER);
+    }
+
+    @GetMapping("/resumeJob/{id}")
+    @Operation(summary = "系统-任务中心-后台任务开启关闭")
+    public void resumeJob(@PathVariable String id) {
+        scheduleService.resumeJob(id, SecurityUtils.getUserId(), "/schedule/resumeJob/", OperationLogModule.SETTING_SYSTEM_TASK_CENTER);
     }
 
     @PostMapping("/update-cron")
     @Operation(summary = "系统-任务中心-后台任务更新cron表达式")
     public void updateValue(@Validated @RequestBody ScheduleRequest request) {
-        scheduleService.updateCron(request, SecurityUtils.getUserId(), "/system/task-center/schedule/update-cron", OperationLogModule.SETTING_SYSTEM_TASK_CENTER);
+        scheduleService.updateCron(request, SecurityUtils.getUserId(), "/schedule/update-cron", OperationLogModule.SETTING_SYSTEM_TASK_CENTER);
     }
 }

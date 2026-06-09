@@ -38,13 +38,13 @@ export interface ICustomField {
     scene: SceneType; // 使用场景
     type: FormItemType; // 表单类型
     remark: string;
-    internal: boolean; // 是否是内置字段
-    scopeType: string; // 组织或项目级别字段（PROJECT, ORGANIZATION）
+    internal: boolean; // 是否生成异常文件
+    fieldKey: string;
     createTime: number;
     updateTime: number;
     createUser: string;
     refId: string | null; // 项目字段所关联的组织字段ID
-    enableOptionKey: boolean | null; // 是否需要手动输入选项key
+    enableOptionKey: boolean
     scopeId: string; // 组织或项目ID
     options: Array<IFieldOptions>;
 }
@@ -52,7 +52,7 @@ export interface ICustomField {
 export interface IAddOrUpdateField {
     id?: string;
     name: string;
-    used: boolean;
+    used?: boolean;
     scene: SceneType; // 使用场景
     type: FormItemType;
     remark: string; // 备注

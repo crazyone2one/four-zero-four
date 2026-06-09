@@ -34,4 +34,6 @@ public interface CustomFieldService extends IService<CustomField> {
     Page<CustomFieldDTO> getCustonFieldpage(CustomFieldPageRequest request);
 
     List<CustomFieldDTO> listCustomField(String scopeId, String scene);
+
+    List<CustomFieldDTO> listCustomFieldByScene(String scene);
 }

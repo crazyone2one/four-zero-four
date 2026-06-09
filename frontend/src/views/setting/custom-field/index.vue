@@ -1,20 +1,22 @@
 <script setup lang="ts">
 
-import {type DataTableColumns, NButton, NFlex} from "naive-ui";
+import {type DataTableColumns, NButton, NDivider, NFlex} from "naive-ui";
 import TableActionBar from "/@/components/table/TableActionBar.vue";
 import {useI18n} from "/@/composables/useI18n.ts";
 import {useAppStore} from "/@/stores";
-import type {ICustomField} from "/@/typings/custom-field.ts";
+import type {IAddOrUpdateField, ICustomField} from "/@/typings/custom-field.ts";
 import {usePagination} from "alova/client";
 import {customFieldApi} from "/@/api/modules/custom-field.ts";
 import EditFieldModal from "/@/views/setting/custom-field/components/EditFieldModal.vue";
 import {getIconType} from "/@/views/setting/custom-field/field-setting.ts";
+import PopConfirm from '/@/components/popcomfirm/index.vue'
 
 const {t} = useI18n()
 const keyword = ref('');
 const showAddFieldModal = ref(false);
 const checkedRowKeys = ref<string[]>([])
 const appStore = useAppStore();
+const fieldDrawerRef = useTemplateRef<InstanceType<typeof EditFieldModal>>('fieldDrawerRef');
 const currentProjectId = computed(() => appStore.appStore.currentProjectId);
 const columns: DataTableColumns<ICustomField> = [
   {type: 'selection', fixed: 'left', options: ['all', 'none']},
@@ -36,7 +38,30 @@ const columns: DataTableColumns<ICustomField> = [
   },
   {title: t('system.orgTemplate.columnFieldDescription'), key: 'remark', width: 300, ellipsis: {tooltip: true}},
   {title: t('system.orgTemplate.columnFieldUpdatedTime'), key: 'updateTime'},
-  {title: t('system.organization.operation'), key: 'operation', fixed: 'right', width: 200},
+  {
+    title: t('system.organization.operation'), key: 'operation', fixed: 'right', width: 200, render(row) {
+      return [
+        h(PopConfirm, {
+          title: t('system.orgTemplate.updateTip', {name: row.name}),
+          subTitleTip: t('system.orgTemplate.updateDescription', {type: 'x'}),
+          okText: t('system.orgTemplate.confirm')
+        }, {
+          default: () => h(NButton, {
+            text: true,
+            class: '!mr-0',
+            disabled: row.internal,
+            onClick: () => handleEdit(row)
+          }, {default: () => t('system.orgTemplate.edit')})
+        }),
+        h(NDivider, {class: 'h-[12px]', vertical: true}, {}),
+        h(NButton, {
+          text: true,
+          type: 'error',
+          onClick: () => handlerDelete(row)
+        }, {default: () => t('system.orgTemplate.delete')})
+      ];
+    }
+  },
 ]
 const {data, loading, page, pageSize, total, send: fetchData} = usePagination((page, pageSize) => {
   return customFieldApi.getFieldPage({
@@ -55,6 +80,23 @@ const {data, loading, page, pageSize, total, send: fetchData} = usePagination((p
 })
 const handleAdd = () => {
   showAddFieldModal.value = true
+}
+const handleEdit = (record: ICustomField) => {
+  fieldDrawerRef.value?.editHandler(record as unknown as IAddOrUpdateField)
+}
+
+const handlerDelete = (record: ICustomField) => {
+  window.$dialog.error({
+    title: t('system.orgTemplate.deleteTitle', {name: record.name}),
+    content: t('system.orgTemplate.deleteFiledContentNotUsed'),
+    negativeText: t('common.cancel'),
+    positiveText: t('common.confirmDelete'),
+    onPositiveClick: async () => {
+      await customFieldApi.deleteOrdField(record.id);
+      window.$message.success(t('system.orgTemplate.deleteSuccess'));
+      await fetchData();
+    }
+  })
 }
 onMounted(() => {
   fetchData()
@@ -83,7 +125,8 @@ onMounted(() => {
                         :total="total" @clear="checkedRowKeys=[]"/>
     </template>
   </n-card>
-  <edit-field-modal v-model:show-modal="showAddFieldModal" :project-id="currentProjectId" @success="()=>fetchData()"/>
+  <edit-field-modal ref="fieldDrawerRef" v-model:show-modal="showAddFieldModal" :project-id="currentProjectId"
+                    @success="()=>fetchData()"/>
 </template>
 
 <style scoped>

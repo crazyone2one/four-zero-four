@@ -44,7 +44,7 @@ public class CustomFieldOptionServiceImpl extends ServiceImpl<CustomFieldOptionM
         if (CollectionUtils.isNotEmpty(options)) {
             options.sort(Comparator.comparing(CustomFieldOption::getPos));
         }
-        return List.of();
+        return options;
     }
 
     @Override
