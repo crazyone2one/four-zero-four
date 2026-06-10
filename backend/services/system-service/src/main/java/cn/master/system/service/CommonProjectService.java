@@ -11,6 +11,7 @@ import cn.master.system.dto.user.UserExtendDTO;
 import cn.master.system.entity.Project;
 import cn.master.system.entity.SystemUser;
 import cn.master.system.entity.UserRoleRelation;
+import cn.master.system.handler.ProjectServiceInvoker;
 import cn.master.system.log.dto.LogDTO;
 import cn.master.system.mapper.ProjectMapper;
 import cn.master.system.mapper.SystemUserMapper;
@@ -51,6 +52,7 @@ public class CommonProjectService {
     private final OperationLogService operationLogService;
     private final SystemUserMapper userMapper;
     private final SimpleUserService simpleUserService;
+    private final ProjectServiceInvoker serviceInvoker;
 
     public ProjectDTO add(UpdateProjectRequest request, String createUser, String path, String module) {
         Project project = new Project();
@@ -63,6 +65,7 @@ public class CommonProjectService {
         project.setEnable(request.getEnable());
         project.setDescription(request.getDescription());
         projectMapper.insertSelective(project);
+        serviceInvoker.invokeCreateServices(project.getId());
         ProjectDTO projectDTO = new ProjectDTO();
         BeanUtils.copyProperties(project, projectDTO);
         ProjectAddMemberBatchRequest memberRequest = new ProjectAddMemberBatchRequest();

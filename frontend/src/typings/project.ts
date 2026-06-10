@@ -59,3 +59,17 @@ export interface IAddUserToOrgOrProjectParams {
     memberIds?: string[];
     userRoleIds?: string[];
 }
+
+export interface IDataSource {
+    dataSource: string
+    dbUrl: string
+    username: string
+    password: string
+}
+
+export interface IProjectParams {
+    id: string;
+    projectId: string;
+    paramType: string;
+    parameters: IDataSource;
+}

@@ -224,4 +224,5 @@ export default {
   'common.checkDetail': 'View details',
   'common.operator': 'Operator',
   'common.notNull': '{value} cannot be empty',
+  'common.tableNoData': 'No data yet, please'
 };

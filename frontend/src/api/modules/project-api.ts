@@ -3,7 +3,8 @@ import type {
     IAddUserToOrgOrProjectParams,
     ICreateOrUpdateSystemProjectParams,
     IProjectOption,
-    IProjectPageItem
+    IProjectPageItem,
+    IProjectParams
 } from "/@/typings/project.ts";
 import type {IPageResponse, ITableQueryParams} from "/@/typings/common";
 import type {IUserOption} from "/@/typings/user.ts";
@@ -31,5 +32,8 @@ export const projectApi = {
     // 给组织或项目添加成员
     addUserToOrgOrProject: (params: IAddUserToOrgOrProjectParams) =>
         FZFR.Post(params.projectId ? 'system/project/add-member' : '', params),
-    getAdminByOrganizationOrProject: (keyword: string) => FZFR.Get<IUserOption>("system/project/user-list", {params: {keyword}})
+    getAdminByOrganizationOrProject: (keyword: string) => FZFR.Get<IUserOption>("system/project/user-list", {params: {keyword}}),
+
+    saveOrUpdateProjectParma: (params: IProjectParams) => FZFR.Post<IProjectParams>(params.id ? '/project/parameter/update' : '/project/parameter/save', params),
+    getProjectParamsByProjectId: (projectId: string) => FZFR.Get<Array<IProjectParams>>(`/project/parameter/list/${projectId}`),
 }

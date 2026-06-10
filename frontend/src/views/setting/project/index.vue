@@ -9,6 +9,7 @@ import UserAdmin from "/@/components/UserAdmin.vue";
 import AddProjectModal from "/@/views/setting/project/components/AddProjectModal.vue";
 import ShowOrEdit from "/@/components/ShowOrEdit.vue";
 import UserDrawer from "/@/views/setting/project/components/UserDrawer.vue";
+import ProjectParmsDrawer from "/@/views/setting/project/params/ProjectParmsDrawer.vue";
 
 const {t} = useI18n()
 const keyword = ref('');
@@ -18,6 +19,8 @@ const currentUserDrawer = reactive({
   projectId: '',
   currentName: '',
 });
+const currentProjectId = ref<string>('')
+const paramConfigVisible = ref(false)
 const columns: DataTableColumns<IProjectPageItem> = [
   {type: 'selection', fixed: 'left', options: ['all', 'none']},
   {title: t('system.organization.NUM'), key: 'num', ellipsis: {tooltip: true}},
@@ -30,7 +33,7 @@ const columns: DataTableColumns<IProjectPageItem> = [
   {
     title: t('system.organization.member'), key: 'memberCount',
     render(row) {
-      return h('span', {class:'cursor-pointer',onClick: () => showUserDrawer(row)}, {default: () => row.memberCount})
+      return h('span', {class: 'cursor-pointer', onClick: () => showUserDrawer(row)}, {default: () => row.memberCount})
     }
   },
   {
@@ -61,6 +64,10 @@ const columns: DataTableColumns<IProjectPageItem> = [
         return h(NFlex, {}, {
           default: () => [
             h(NButton, {text: true, onClick: () => handleUpdateProject(row)}, {default: () => t('common.edit')}),
+            h(NButton, {
+              text: true,
+              onClick: () => handleParams(row)
+            }, {default: () => h('div', {class: 'i-mage:filter-square'})}),
             h(NButton, {text: true}, {default: () => t('system.organization.addMember')}),
             h(TableMoreAction, {list: tableActions, onSelect: (key) => handleMoreAction(key, row)}),
           ]
@@ -77,10 +84,12 @@ const showUserDrawer = (record: IProjectPageItem) => {
 const {send: modifyName} = useRequest(p => projectApi.modifyProjectName(p), {immediate: false})
 const handleNameChange = (v: string, record: IProjectPageItem) => {
   const {id, organizationId} = record
-  modifyName({id, name: v, organizationId}).then(() => {
-    window.$message.success(t('common.updateSuccess'))
-    fetchData()
-  })
+  if (v === record.name) {
+    modifyName({id, name: v, organizationId}).then(() => {
+      window.$message.success(t('common.updateSuccess'))
+      fetchData()
+    });
+  }
 };
 const handleEnableChange = (isEnable: boolean, record: IProjectPageItem) => {
   const title = isEnable ? t('system.project.enableTitle') : t('system.project.endTitle');
@@ -145,6 +154,10 @@ const handleUserDrawerCancel = () => {
 const rowClassName = (record: IProjectPageItem) => {
   return record.id === currentUserDrawer.projectId ? 'selected-row-class' : '';
 }
+const handleParams = (record: IProjectPageItem) => {
+  currentProjectId.value = record.id
+  paramConfigVisible.value = true
+}
 onBeforeMount(() => {
   fetchData()
 })
@@ -182,6 +195,7 @@ onBeforeMount(() => {
                :project-id="currentUserDrawer.projectId"
                :current-name="currentUserDrawer.currentName"
                @cancel="handleUserDrawerCancel"/>
+  <project-parms-drawer v-model:active="paramConfigVisible" :project-id="currentProjectId"/>
 </template>
 
 <style scoped>

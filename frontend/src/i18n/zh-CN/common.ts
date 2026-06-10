@@ -224,4 +224,5 @@ export default {
   'common.checkDetail': '查看详情',
   'common.operator': '操作人',
   'common.notNull': '{value}不能为空',
+  'common.tableNoData': '暂无数据，请',
 };
