@@ -83,10 +83,9 @@ const handleSubmit = async () => {
             if (showOptionsSelect.value) {
               let startPos = 1;
               form.value.options = (batchFormRef.value?.getFormResult() || []).map(item => {
-                console.log(item)
                 const currentItem: IFieldOptions = {
                   text: item.text,
-                  value: item.text || getGenerateId(),
+                  value: item.value ? item.value : getGenerateId(),
                   pos: startPos,
                 };
                 if (item.fieldId) {

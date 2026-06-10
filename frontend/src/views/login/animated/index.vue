@@ -33,10 +33,12 @@ const handleLogin = () => {
       send().then(async res => {
         const {accessToken, refreshToken, user} = res
         setToken(accessToken, refreshToken)
-        useUserStore().user = user
-        appStore.currentOrgId = user.lastOrganizationId || '';
-        appStore.currentProjectId = user.lastProjectId || '';
-        await toLayout()
+        if (user) {
+          useUserStore().user = user
+          appStore.currentOrgId = user.lastOrganizationId || '';
+          appStore.currentProjectId = user.lastProjectId || '';
+          await toLayout()
+        }
       })
     }
   })

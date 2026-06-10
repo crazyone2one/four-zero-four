@@ -132,7 +132,7 @@ public class OperationLogAspect {
                     context.setVariable(params[len], args[len]);
                 }
                 for (Class<?> clazz : msLog.clazz()) {
-                    context.setVariable("msClass", applicationContext.getBean(clazz));
+                    context.setVariable("clazz", applicationContext.getBean(clazz));
                 }
                 // 需要后置再次执行的方法
                 if (Arrays.stream(postMethodNames).anyMatch(input -> input.contains(msLog.type()))) {

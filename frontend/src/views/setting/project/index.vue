@@ -53,7 +53,7 @@ const columns: DataTableColumns<IProjectPageItem> = [
   },
   {title: t('system.organization.createTime'), key: 'createTime', width: 200},
   {
-    title: t('system.organization.operation'), key: 'operation', fixed: 'right', width: 150,
+    title: t('system.organization.operation'), key: 'operation', fixed: 'right', width: 200,
     render(row) {
       if (!row.enable) {
         return h(NButton, {text: true, type: 'error'}, {default: () => t('common.delete')});

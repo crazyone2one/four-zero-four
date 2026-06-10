@@ -46,7 +46,6 @@ watch(() => selectedCustomFieldIds.value, (newValue) => {
     selectedCustomFields.value = newValue.map(id =>
         customFields.value!.find(c => c.id === id)
     ).filter((cf): cf is ICustomField => cf !== undefined)
-    console.log(selectedCustomFields.value)
   } else {
     selectedCustomFields.value = []
   }

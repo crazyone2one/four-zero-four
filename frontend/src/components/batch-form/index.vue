@@ -120,11 +120,11 @@ defineExpose({
           <n-form-item v-for="model of props.models"
                        :key="`${model.field}${index}`"
                        :path="`list[${index}].${model.field}`"
-                       :class="index > 0 ? 'hidden-item' : 'mb-0 flex-1'"
+                       :class="(Number(index) > 0)? 'hidden-item' : 'mb-0 flex-1'"
                        :rule="model.rules?.map(e=>{
             if(e.notRepeat===true){
               return {validator(_, value: string) {
-                return fieldNotRepeat(value, index ,model.field,e.message as string)
+                return fieldNotRepeat(value, Number(index) ,model.field,e.message as string)
               }}
             }
             return e;
@@ -147,7 +147,7 @@ defineExpose({
           </div>
           <div v-if="!hideAdd" v-show="form.list.length > 1" class="cursor-pointer"
                :style="{ 'margin-top': index === 0 && !props.isShowDrag ? '35px' : '10px' }"
-               @click="removeField(index)">
+               @click="removeField(Number(index))">
             <div class="i-mage:minus-circle"/>
           </div>
         </n-flex>

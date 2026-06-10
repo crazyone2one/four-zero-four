@@ -15,7 +15,7 @@ const {t} = useI18n()
 const visible = ref(false);
 const keyword = ref('');
 const userFormMode = ref<UserModalMode>('create');
-const editUserModalRef = ref<InstanceType<typeof EditUserModal>>();
+// const editUserModalRef = ref<InstanceType<typeof EditUserModal>>();
 const checkedRowKeys = ref<string[]>([])
 const userGroupOptions = ref<ISystemRole[]>([]);
 const init = async () => {

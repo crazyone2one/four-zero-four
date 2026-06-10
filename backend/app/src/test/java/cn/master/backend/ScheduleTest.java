@@ -44,7 +44,7 @@ class ScheduleTest {
         schedule.setJob("demoJob");
         schedule.setType(ScheduleType.CRON.name());
         schedule.setResourceType(ScheduleResourceType.DEMO_INFO.name());
-        scheduleService.addSchedule(schedule, );
+        scheduleService.addSchedule(schedule,"x");
     }
 
     @Test
